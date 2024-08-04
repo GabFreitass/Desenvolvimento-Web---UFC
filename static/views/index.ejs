@@ -10,8 +10,33 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <img src="/assets/space-raiders.png" alt="Space Raiders">
+    <div class="background">
+      <img
+        class="game-logo"
+        src="/assets/space-raiders.png"
+        alt="Space Raiders"
+      />
+      <form class="home-controls" action="" method="post">
+        <div class="enter-name-container">
+          <label class="game-font" for="player-name">ENTER YOUR NAME</label>
+          <input id="player-name" type="text" />
+        </div>
+        <div class="start-button">
+          <span>
+            <img src="/assets/play-icon.svg" alt="Start" />
+            <button class="game-font btn-start" type="submit">START</button>
+          </span>
+        </div>
+        <div class="rank-button">
+          <span>
+            <img src="/assets/trophy-icon.svg" alt="Ranking" />
+            <a class="game-font btn-ranking" href="/ranking">RANKING</a>
+          </span>
+        </div>
+      </form>
+    </div>
   </body>
 </html>

@@ -1,0 +1,116 @@
+body {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+:root {
+  --yellow-primary: #e8df31;
+  --red-primary: #d3252e;
+  --dark-primary: #000f17;
+}
+
+.background {
+  background-color: var(--dark-primary);
+  width: 100vw; /* Ocupa 100% da largura da viewport */
+  min-height: 100vh;
+  background-image: url(../assets/space_home_bg.png);
+  background-size: 100% cover; /* Escala a imagem para caber na div */
+  background-position: center; /* Centraliza a imagem */
+  background-repeat: no-repeat; /* Não repete a imagem */
+  overflow-y: auto; /* Oculta qualquer excesso de conteúdo */
+  overflow-x: hidden;
+}
+
+.game-logo {
+  display: block;
+  width: calc(40vw + 100px);
+  max-width: 550px;
+  margin: auto;
+  margin-top: 5vh;
+  margin-bottom: 40px;
+}
+
+.game-font {
+  font-family: "Orbitron", sans-serif;
+  color: var(--yellow-primary);
+  transition: color 0.4s ease;
+}
+
+.enter-name-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.start-button {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  border: 5px solid var(--yellow-primary);
+  border-radius: 5px;
+  gap: 15px;
+}
+
+.start-button:hover {
+  cursor: pointer;
+}
+
+.start-button:hover .game-font {
+  color: white;
+}
+
+.start-button:hover img {
+  filter: brightness(10);
+}
+
+.start-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background-color: var(--yellow-primary);
+  z-index: 0;
+  transition: width 0.4s ease;
+}
+
+.start-button:hover::before {
+  width: 100%;
+}
+
+.start-button img {
+  width: min(5vw, 2rem);
+  filter: brightness(1);
+  transition: filter 0.4s ease;
+}
+
+.start-button span {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-start {
+  border: none;
+  background: none;
+  font-size: min(8vw, 4rem);
+  font-weight: bold;
+}
+
+.btn-start:hover {
+  cursor: inherit;
+}
+
+.home-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  max-width: 600px;
+  margin: auto;
+}

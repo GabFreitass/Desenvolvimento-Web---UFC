@@ -7,7 +7,7 @@ const port = 8088
 
 app.set('views', path.join(__dirname, 'static/views'));
 app.set('view engine', 'ejs')
-app.use('/assets', express.static(path.join(__dirname, 'static/assets')));
+app.use(express.static(path.join(__dirname, 'static')));
 
 app.get('/', (req, res) => {
     res.render('index', { message: 'Olá, mundo!' });
