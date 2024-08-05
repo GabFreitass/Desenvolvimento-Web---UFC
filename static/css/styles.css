@@ -2,6 +2,10 @@ body {
   margin: 0;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 a {
   text-decoration: none;
 }
@@ -16,7 +20,7 @@ a {
   background-color: var(--dark-primary);
   width: 100vw; /* Ocupa 100% da largura da viewport */
   min-height: 100vh;
-  background-image: url(../assets/space_home_bg.png);
+  background-image: url(../assets/space-home.jpg);
   background-size: 100% cover; /* Escala a imagem para caber na div */
   background-position: center; /* Centraliza a imagem */
   background-repeat: no-repeat; /* Não repete a imagem */
@@ -31,6 +35,7 @@ a {
   margin: auto;
   margin-top: 5vh;
   margin-bottom: 40px;
+  animation: pulse 2s infinite ease-in-out;
 }
 
 .game-font {
@@ -113,4 +118,63 @@ a {
   width: 90%;
   max-width: 600px;
   margin: auto;
+  gap: 30px;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.enter-name-container label {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.enter-name-container {
+  margin-bottom: 3rem;
+}
+
+.enter-name-container input {
+  border: 6px solid var(--red-primary);
+  width: min(80vw, 600px);
+  height: 80px;
+  font-size: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 10px 0 #000;
+  transition: outline 0.4s ease;
+  color: var(--dark-primary);
+  background-color: rgba(255, 255, 255, 0.95);
+  padding-left: 1rem;
+}
+
+.enter-name-container input:focus {
+  outline: 1px solid var(--yellow-primary); /* Remove a borda padrão de foco */
+}
+
+.rank-button {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  transition: transform 0.4s ease-in-out;
+}
+
+.rank-button img {
+  width: 2rem;
+}
+
+.rank-button a {
+  font-size: 2rem;
+}
+
+.rank-button:hover {
+  transform: scale(1.5);
+  cursor: pointer;
 }
