@@ -7,12 +7,13 @@ multijogador e mantendo o incentivo para a competição entre os jogadores.
 ## Funcionalidades a serem desenvolvidas
 
 - [X] Design das páginas do jogo, incluindo um ranking top 5 entre os jogadores, a página inicial e a página do jogo.
-[Design do jogo no Figma](www.figma.com/design/iMkpwHSOsktwqlFQhTl3LO/Space-Raiders)
+[Design do jogo no Figma](https://www.figma.com/design/iMkpwHSOsktwqlFQhTl3LO/Space-Raiders)
 - [X] Página inicial, desenvolvida em HTML e CSS
 - [ ] Página do ranking
 - [ ] Página do jogo
 - [ ] Mecânica do jogo usando Javascript
 - [ ] Acessibilidade do site
+- [ ] Tornar o jogo público
 
 ## Como jogar
 
