@@ -1,5 +1,5 @@
 import express from "express";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 import { join, dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,17 +13,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(__dirname, "static")));
 
 app.get("/", (req, res) => {
-  res.render("index");
+    res.render("index");
 });
 
-app.get("/game", (req, res) => {
-    res.render("game", {})
-});
+// app.get("/game", (req, res) => {
+//     res.render("game", {});
+// });
 
 app.post("/game", (req, res) => {
-  res.render("game", {});
+    const playerName = req.body["player-name"];
+    res.render("game", { playerName });
 });
 
 app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+    console.log(`Servidor rodando em http://localhost:${port}`);
 });

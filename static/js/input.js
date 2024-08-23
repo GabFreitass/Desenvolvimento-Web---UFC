@@ -12,6 +12,9 @@ export class Input {
 
         document.addEventListener("keydown", this.keydownListener);
         document.addEventListener("keyup", this.keyupListener);
+        document.addEventListener("visibilitychange", (event) => {
+            this.inputKeys = [];
+        });
         canvas.addEventListener("mousemove", this.mouseListener);
     }
 

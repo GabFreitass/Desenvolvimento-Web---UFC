@@ -15,6 +15,10 @@ export class Vector2 {
         );
     }
 
+    multiply(otherVector) {
+        return this.x * otherVector.x + this.y * otherVector.y;
+    }
+
     add(otherVector) {
         return new Vector2(this.x + otherVector.x, this.y + otherVector.y);
     }

@@ -1,8 +1,10 @@
+import { Resource } from "./resource.js";
 import { Sprite } from "./sprite.js";
-import { Entity } from "./entity.js";
+import { Player } from "./player.js";
 import { Input } from "./input.js";
 
 const gameCanvas = document.querySelector("canvas#game-canvas");
+const playerName = gameCanvas.getAttribute("data-player-name");
 
 const GameStates = {
     UNREADY: "UNREADY",
@@ -23,14 +25,15 @@ const GameConfig = {
     FIRE: "KeyF",
 };
 
+export const GameResources = {
+    spaceship: null,
+    bullets: null,
+};
+
 class Game {
     constructor() {
         this.state = GameStates.UNREADY;
         this.player = null;
-        this.entities = [];
-        this.sprites = {
-            spaceship: null,
-        };
         this.gameInput = null;
         this.ctx = gameCanvas.getContext("2d");
         this.lastFrameTime = 0;
@@ -42,24 +45,29 @@ class Game {
     async load() {
         this.state = GameStates.LOADING;
 
-        // load sprites
-        this.sprites.spaceship = new Sprite(
-            "assets/ships_0.png",
-            256,
-            256,
-            64,
-            64,
-            false,
-            1
+        // load resources
+        GameResources.spaceship = new Resource("assets/ships_0.png");
+        GameResources.bullets = new Resource("assets/bullets.png");
+        const loadResources = Object.values(GameResources).map((resource) =>
+            resource.load()
         );
-        const loadSprites = Object.values(this.sprites).map((sprite) =>
-            sprite.load()
-        );
-        await Promise.all(loadSprites);
+        await Promise.all(loadResources);
 
         // load entities
-        this.player = new Entity({ x: 0, y: 0 }, this.sprites.spaceship);
-        this.entities.push(this.player);
+        const playerSprite = new Sprite(
+            GameResources.spaceship,
+            1,
+            12,
+            192,
+            192
+        );
+        this.player = new Player(
+            playerName,
+            (gameCanvas.width - playerSprite.width) / 2,
+            (gameCanvas.height - playerSprite.height) / 2,
+            playerSprite,
+            500
+        );
 
         // load game inputs
         this.gameInput = new Input(gameCanvas);
@@ -90,10 +98,17 @@ class Game {
             case GameConfig.MOVE_DOWN:
                 this.player.move("DOWN");
                 break;
-
+            case GameConfig.FIRE:
+                this.player.stop();
+                this.player.fire();
+                break;
             // when key is released
             case null:
-                this.player.state = "IDLE";
+                this.player.stop();
+                break;
+            default:
+                this.player.stop();
+                break;
         }
     }
 
@@ -112,17 +127,12 @@ class Game {
 
     update(deltaTime) {
         this.handleInputs();
-        this.entities.forEach((entity) => entity.update(deltaTime));
-        Object.values(this.sprites).forEach((sprite) =>
-            sprite.update(deltaTime)
-        );
+        this.player.update(deltaTime);
     }
 
     draw(alpha) {
         this.ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-        this.entities.forEach((entity) => {
-            entity.draw(this.ctx, alpha);
-        });
+        this.player.draw(this.ctx, alpha);
     }
 
     mainloop(timestamp) {
