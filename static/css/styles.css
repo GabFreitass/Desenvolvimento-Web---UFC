@@ -22,7 +22,7 @@ a {
   min-height: 100vh;
   background-image: url(../assets/space-home.jpg);
   background-size: contain; /* Escala a imagem para caber na div */
-  background-position: center 0; /* Centraliza a imagem */
+  background-position: center; /* Centraliza a imagem */
   background-repeat: no-repeat; /* Não repete a imagem */
   overflow-y: auto; /* Oculta qualquer excesso de conteúdo */
   overflow-x: hidden;
@@ -48,6 +48,11 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.enter-name-container #player-name {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 600;
 }
 
 .start-button {

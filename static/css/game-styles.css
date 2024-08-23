@@ -1,0 +1,22 @@
+:root {
+    --yellow-primary: #e8df31;
+    --red-primary: #d3252e;
+    --dark-primary: #000f17;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--dark-primary);
+}
+
+canvas#game-canvas {
+    background-image: url(../assets/game-bg.jpg);
+    background-size: contain; /* Escala a imagem para caber na div */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: repeat; /* Não repete a imagem */
+    overflow: hidden;
+    width: 80%;
+    border: 5px solid black;
+    image-rendering: pixelated;
+}
