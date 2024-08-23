@@ -3,7 +3,7 @@ import { Sprite } from "./sprite.js";
 import { Player } from "./player.js";
 import { Input } from "./input.js";
 
-const gameCanvas = document.querySelector("canvas#game-canvas");
+export const gameCanvas = document.querySelector("canvas#game-canvas");
 const playerName = gameCanvas.getAttribute("data-player-name");
 
 const GameStates = {

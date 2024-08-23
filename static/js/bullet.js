@@ -3,8 +3,7 @@ import { Entity } from "./entity.js";
 export class Bullet extends Entity {
     constructor(x, y, sprite, speed) {
         super(x, y, sprite, speed);
-        this.sprite.currentFrame = 0;
-        this.durationTime = 4000;
+        this.durationTime = 2000;
         this.accumulatedTime = 0;
         this.isAlive = true;
         this.update = this.update.bind(this);

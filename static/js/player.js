@@ -30,7 +30,6 @@ export class Player extends Entity {
             bullet.update(dt);
             if (!bullet.isAlive) {
                 delete this.bullets[index];
-            } else {
             }
         });
     }
@@ -65,7 +64,7 @@ export class Player extends Entity {
             128,
             128,
             false,
-            6
+            1
         );
         const bulletX =
             this.position.x + this.sprite.width / 2 - bulletSprite.width / 2;

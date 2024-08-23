@@ -1,3 +1,4 @@
+import { gameCanvas } from "./game.js";
 import { Vector2 } from "./vector2.js";
 
 const EntityState = {
