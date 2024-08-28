@@ -1,41 +1,39 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Space Raiders</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="css/styles.css" />
-    <script src="js/main.js" type="text/javascript"></script>
-  </head>
-  <body>
-    <div class="background">
-      <img
-        class="game-logo"
-        src="/assets/space-raiders.png"
-        alt="Space Raiders"
-      />
-      <form class="home-controls" action="/game" method="post">
-        <div class="enter-name-container">
-          <label class="game-font" for="player-name">ENTER YOUR NAME</label>
-          <input id="player-name" type="text" name="player-name" required />
-        </div>
-        <div class="start-button">
-          <span>
-            <img src="/assets/play-icon.svg" alt="Start" />
-            <button class="game-font btn-start" type="submit">START</button>
-          </span>
-        </div>
-        <div class="rank-button">
-          <img src="/assets/trophy-icon.svg" alt="Ranking" />
-          <a class="game-font btn-ranking" href="/ranking">RANKING</a>
-        </div>
-      </form>
-    </div>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Space Raiders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/main.js" type="text/javascript"></script>
+</head>
+
+<body>
+  <div class="background">
+    <a href="/">
+      <img class="game-logo" src="/assets/space-raiders.png" alt="Space Raiders" />
+    </a>
+    <form class="home-controls" action="/game" method="post">
+      <div class="enter-name-container">
+        <label class="game-font" for="player-name">ENTER YOUR NAME</label>
+        <input id="player-name" type="text" name="player-name" required />
+      </div>
+      <div class="start-button">
+        <span>
+          <img src="/assets/play-icon.svg" alt="Start" />
+          <button class="game-font btn-start" type="submit">START</button>
+        </span>
+      </div>
+      <div class="rank-button">
+        <img src="/assets/trophy-icon.svg" alt="Ranking" />
+        <a class="game-font btn-ranking" href="/ranking">RANKING</a>
+      </div>
+    </form>
+  </div>
+</body>
+
 </html>
