@@ -1,21 +1,16 @@
-import { Vector2 } from "./vector2.js";
+import { Vector2 } from "../utils/vector2.js";
 
 export class Input {
     constructor(canvas) {
         this.inputKeys = [];
         this.cursorPosition = new Vector2(0, 0);
 
-        // Vinculando os listeners ao contexto da instância
-        this.keydownListener = this.keydownListener.bind(this);
-        this.keyupListener = this.keyupListener.bind(this);
-        this.mouseListener = this.mouseListener.bind(this);
-
-        document.addEventListener("keydown", this.keydownListener);
-        document.addEventListener("keyup", this.keyupListener);
+        document.addEventListener("keydown", this.keydownListener.bind(this));
+        document.addEventListener("keyup", this.keyupListener.bind(this));
         document.addEventListener("visibilitychange", (event) => {
             this.inputKeys = [];
         });
-        canvas.addEventListener("mousemove", this.mouseListener);
+        canvas.addEventListener("pointermove", this.pointerMoveListener.bind(this));
     }
 
     get pressingKey() {
@@ -42,8 +37,12 @@ export class Input {
         this.inputKeys.splice(keyIndex, 1);
     }
 
-    mouseListener(event) {
-        this.cursorPosition.x = event.clientX;
-        this.cursorPosition.y = event.clientY;
+    pointerMoveListener(event) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const scaleX = event.currentTarget.width / rect.width;
+        const scaleY = event.currentTarget.height / rect.height;
+        
+        this.cursorPosition.x = (event.clientX - rect.left) * scaleX;
+        this.cursorPosition.y = (event.clientY - rect.top) * scaleY;
     }
 }

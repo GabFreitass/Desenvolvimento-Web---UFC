@@ -1,36 +1,11 @@
-import { Resource } from "./resource.js";
+import { Resource } from "./resource.js"
 import { Sprite } from "./sprite.js";
-import { Player } from "./player.js";
+import { Player } from "../entities/player.js";
 import { Input } from "./input.js";
+import { GameConfig, GameResources, GameStates } from "./constants.js";
+import { gameCanvas, playerName } from "../main.js";
 
-export const gameCanvas = document.querySelector("canvas#game-canvas");
-const playerName = gameCanvas.getAttribute("data-player-name");
-
-const GameStates = {
-    UNREADY: "UNREADY",
-    READY: "READY",
-    RUNNING: "RUNNING",
-    LOADING: "LOADING",
-    PAUSED: "PAUSED",
-};
-
-const GameConfig = {
-    MAXFPS: 60,
-
-    // controls
-    MOVE_LEFT: "KeyA",
-    MOVE_RIGHT: "KeyD",
-    MOVE_UP: "KeyW",
-    MOVE_DOWN: "KeyS",
-    FIRE: "KeyF",
-};
-
-export const GameResources = {
-    spaceship: null,
-    bullets: null,
-};
-
-class Game {
+export class Game {
     constructor() {
         this.state = GameStates.UNREADY;
         this.player = null;
@@ -58,8 +33,14 @@ class Game {
             GameResources.spaceship,
             1,
             12,
-            192,
-            192
+            130,
+            105,
+            false,
+            0,
+            1000,
+            null,
+            130,
+            105
         );
         this.player = new Player(
             playerName,
@@ -85,6 +66,8 @@ class Game {
     }
 
     handleInputs() {
+        // Atualiza a posição do cursor
+        this.player.updateCursorPosition(this.gameInput.cursorPosition.x, this.gameInput.cursorPosition.y);
         switch (this.gameInput.currentKey) {
             case GameConfig.MOVE_LEFT:
                 this.player.move("LEFT");
@@ -121,7 +104,7 @@ class Game {
     pause() {
         if (this.state == GameStates.RUNNING) {
             cancelAnimationFrame(this.rafId);
-            this.start = GameStates.PAUSED;
+            this.state = GameStates.PAUSED;
         }
     }
 
@@ -136,29 +119,22 @@ class Game {
     }
 
     mainloop(timestamp) {
-        switch (this.state) {
-            case GameStates.RUNNING:
-                let deltaTime = timestamp - this.lastFrameTime;
-                this.lastFrameTime = timestamp;
+        if (this.state !== GameStates.RUNNING) return;
+        const deltaTime = timestamp - this.lastFrameTime;
+        this.lastFrameTime = timestamp;
 
-                this.accumulatedTime += deltaTime;
+        this.accumulatedTime += deltaTime;
 
-                while (this.accumulatedTime >= this.timeStep) {
-                    this.update(this.timeStep);
-                    this.accumulatedTime -= this.timeStep;
-                }
-
-                let alpha = this.accumulatedTime / this.timeStep;
-                this.draw(alpha);
-
-                // request next frame
-                this.rafId = requestAnimationFrame(this.mainloop);
-                break;
+        while (this.accumulatedTime >= this.timeStep) {
+            this.update(this.timeStep);
+            this.accumulatedTime -= this.timeStep;
         }
+
+        let alpha = this.accumulatedTime / this.timeStep;
+        this.draw(alpha);
+
+        // request next frame
+        this.rafId = requestAnimationFrame(this.mainloop);
     }
 }
 
-const game = new Game();
-game.load().then(() => {
-    game.start();
-});

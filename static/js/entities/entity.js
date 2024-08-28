@@ -1,5 +1,4 @@
-import { gameCanvas } from "./game.js";
-import { Vector2 } from "./vector2.js";
+import { Vector2 } from "../utils/vector2.js";
 
 const EntityState = {
     MOVING: "MOVING",
@@ -22,12 +21,6 @@ export class Entity {
         this.state = EntityState.IDLE;
         this.direction = MovingDirections.NONE;
         this.speed = speed;
-
-        // bind class methods
-        this.stop = this.stop.bind(this);
-        this.move = this.move.bind(this);
-        this.update = this.update.bind(this);
-        this.draw = this.draw.bind(this);
     }
 
     stop() {

@@ -8,11 +8,15 @@ export class Sprite {
         animatedSprite = false,
         frameIndex = 0,
         animationDelay = 1000,
-        totalFrames = null
+        totalFrames = null,
+        spriteWidth = null,
+        spriteHeight = null
     ) {
         this.image = resource;
         this.hFrames = hFrames; // Largura de cada frame
         this.vFrames = vFrames; // Altura de cada frame
+        this.spriteWidth = spriteWidth ?? this.frameWidth; // Largura do sprite em px
+        this.spriteHeight = spriteHeight ?? this.frameHeight; // Altura do sprite em px
         this.width = width; // largura a ser desenhada no canvas
         this.height = height; // altura a ser desenhada no canvas
         this.totalFrames = totalFrames ?? hFrames * vFrames;
@@ -22,12 +26,6 @@ export class Sprite {
         this.rotation = 0;
         this.animationDelay = animationDelay;
         this.frames = this.extractFrames(); // Array para armazenar os frames
-
-        // bind methods
-        this.extractFrames = this.extractFrames.bind(this);
-        this.draw = this.draw.bind(this);
-        this.update = this.update.bind(this);
-        this.extractFrames = this.extractFrames.bind(this);
     }
 
     get frameWidth() {
@@ -56,6 +54,9 @@ export class Sprite {
 
         const frame = this.frames[this.currentFrame];
 
+        const spriteTopLeftX = frame.x + (this.frameWidth - this.spriteWidth) / 2;
+        const spriteTopLeftY = frame.y + (this.frameHeight - this.spriteHeight) / 2;
+
         // Salva o estado do contexto
         ctx.save();
 
@@ -68,10 +69,10 @@ export class Sprite {
         // Desenha o sprite com a origem no centro
         ctx.drawImage(
             this.image,
-            frame.x,
-            frame.y,
-            this.frameWidth,
-            this.frameHeight,
+            spriteTopLeftX,
+            spriteTopLeftY,
+            this.spriteWidth,
+            this.spriteHeight,
             -this.width / 2, // Ajusta a posição para centralizar o sprite
             -this.height / 2, // Ajusta a posição para centralizar o sprite
             this.width,
