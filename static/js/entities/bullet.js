@@ -6,16 +6,19 @@ export class Bullet extends Entity {
         this.durationTime = 2000;
         this.accumulatedTime = 0;
         this.isAlive = true;
-        this.update = this.update.bind(this);
     }
 
     update(dt) {
+        // move bullet towards
+        this.move(Math.cos(this.sprite.rotation - Math.PI / 2), Math.sin(this.sprite.rotation + Math.PI / 2));
         super.update(dt);
-        this.move("UP");
+
         this.accumulatedTime += dt;
         if (this.accumulatedTime >= this.durationTime) {
             this.isAlive = false;
             this.accumulatedTime = 0;
         }
+
+        this.sprite.update(dt);
     }
 }

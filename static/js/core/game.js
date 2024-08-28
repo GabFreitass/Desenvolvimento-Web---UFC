@@ -36,7 +36,7 @@ export class Game {
             130,
             105,
             false,
-            0,
+            3,
             1000,
             null,
             130,
@@ -70,16 +70,16 @@ export class Game {
         this.player.updateCursorPosition(this.gameInput.cursorPosition.x, this.gameInput.cursorPosition.y);
         switch (this.gameInput.currentKey) {
             case GameConfig.MOVE_LEFT:
-                this.player.move("LEFT");
+                this.player.move(-1, 0);
                 break;
             case GameConfig.MOVE_RIGHT:
-                this.player.move("RIGHT");
+                this.player.move(1, 0);
                 break;
             case GameConfig.MOVE_UP:
-                this.player.move("UP");
+                this.player.move(0, 1);
                 break;
             case GameConfig.MOVE_DOWN:
-                this.player.move("DOWN");
+                this.player.move(0, -1);
                 break;
             case GameConfig.FIRE:
                 this.player.stop();

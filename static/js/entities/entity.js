@@ -5,32 +5,26 @@ const EntityState = {
     IDLE: "IDLE",
 };
 
-const MovingDirections = {
-    NONE: "NONE",
-    LEFT: "LEFT",
-    RIGHT: "RIGHT",
-    UP: "UP",
-    DOWN: "DOWN",
-};
-
 export class Entity {
     constructor(x, y, sprite, speed) {
         this.position = new Vector2(x, y);
         this.prevPosition = new Vector2(x, y);
         this.sprite = sprite;
         this.state = EntityState.IDLE;
-        this.direction = MovingDirections.NONE;
+        this.direction = new Vector2(0, 1); // should be an unit vector
         this.speed = speed;
     }
 
     stop() {
         this.state = EntityState.IDLE;
-        this.direction = MovingDirections.NONE;
+        this.direction.x = 0;
+        this.direction.y = 0;
     }
 
-    move(direction) {
+    move(directionX, directionY) {
         this.state = EntityState.MOVING;
-        this.direction = direction;
+        this.direction.x = directionX;
+        this.direction.y = directionY;
     }
 
     update(deltaTime) {
@@ -38,20 +32,9 @@ export class Entity {
         this.prevPosition.x = this.position.x;
         this.prevPosition.y = this.position.y;
         const dx = this.speed * (deltaTime / 1000);
-        switch (this.direction) {
-            case MovingDirections.RIGHT:
-                this.position.x += dx;
-                break;
-            case MovingDirections.LEFT:
-                this.position.x -= dx;
-                break;
-            case MovingDirections.UP:
-                this.position.y -= dx;
-                break;
-            case MovingDirections.DOWN:
-                this.position.y += dx;
-                break;
-        }
+        this.position.x += dx * Math.cos(this.direction.angle - Math.PI / 2);
+        this.position.y += dx * Math.sin(this.direction.angle - Math.PI / 2);
+                
         this.sprite.update(deltaTime);
     }
 

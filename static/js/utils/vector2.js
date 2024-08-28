@@ -8,6 +8,10 @@ export class Vector2 {
         return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
     }
 
+    get angle() {
+        return Math.atan2(this.x, this.y);
+    }
+
     distTo(otherVector) {
         return Math.sqrt(
             Math.pow(otherVector.x - this.x, 2) +

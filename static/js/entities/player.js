@@ -9,7 +9,7 @@ export class Player extends Entity {
         super(x, y, sprite, speed);
         this.name = name;
         this.bullets = [];
-        this.fireRate = 5;
+        this.fireRate = 10;
         this.canFire = true;
         this.accumulatedTime = 0;
         this.cursorPosition = new Vector2(0, 0);
@@ -54,16 +54,16 @@ export class Player extends Entity {
 
         // Desenha o texto no canvas
         const nameX = this.position.x + this.sprite.width / 2;
-        const nameY = this.position.y + this.sprite.height - 30;
+        const nameY = this.position.y + this.sprite.height + 30;
         ctx.fillText(this.name, Math.round(nameX), Math.round(nameY));
     }
 
     draw(ctx, alpha) {
-        super.draw(ctx, alpha);
-        this.drawName(ctx);
         this.bullets.forEach((bullet) => {
             bullet.draw(ctx, alpha);
         });
+        super.draw(ctx, alpha);
+        this.drawName(ctx);
     }
 
     fire() {
@@ -72,8 +72,8 @@ export class Player extends Entity {
             GameResources.bullets,
             3,
             2,
-            128,
-            128,
+            120,
+            360,
             false,
             1,
             1000,
@@ -81,8 +81,9 @@ export class Player extends Entity {
         );
         const bulletX =
             this.position.x + this.sprite.width / 2 - bulletSprite.width / 2;
-        const bulletY = this.position.y - bulletSprite.height / 2;
-        const bullet = new Bullet(bulletX, bulletY, bulletSprite, 600);
+        const bulletY = this.position.y + this.sprite.height / 2 - bulletSprite.height / 2;
+        const bullet = new Bullet(Math.round(bulletX), Math.round(bulletY), bulletSprite, 600);
+        bullet.sprite.rotation = this.sprite.rotation;
         this.bullets.push(bullet);
         this.canFire = false;
     }

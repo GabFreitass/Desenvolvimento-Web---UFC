@@ -10,7 +10,9 @@ export class Sprite {
         animationDelay = 1000,
         totalFrames = null,
         spriteWidth = null,
-        spriteHeight = null
+        spriteHeight = null,
+        spriteOffsetX = 0,
+        spriteOffsetY = 0,
     ) {
         this.image = resource;
         this.hFrames = hFrames; // Largura de cada frame
@@ -20,6 +22,8 @@ export class Sprite {
         this.width = width; // largura a ser desenhada no canvas
         this.height = height; // altura a ser desenhada no canvas
         this.totalFrames = totalFrames ?? hFrames * vFrames;
+        this.spriteOffsetX = spriteOffsetX;
+        this.spriteOffsetY = spriteOffsetY;
         this.currentFrame = frameIndex; // Índice do frame atual
         this.animatedSprite = animatedSprite;
         this.accumulatedTime = 0;
@@ -54,8 +58,8 @@ export class Sprite {
 
         const frame = this.frames[this.currentFrame];
 
-        const spriteTopLeftX = frame.x + (this.frameWidth - this.spriteWidth) / 2;
-        const spriteTopLeftY = frame.y + (this.frameHeight - this.spriteHeight) / 2;
+        const spriteTopLeftX = frame.x + this.spriteOffsetX + (this.frameWidth - this.spriteWidth) / 2;
+        const spriteTopLeftY = frame.y + this.spriteOffsetY + (this.frameHeight - this.spriteHeight) / 2;
 
         // Salva o estado do contexto
         ctx.save();
