@@ -20,4 +20,7 @@ canvas#game-canvas {
     max-width: 1024px;
     border: 5px solid black;
     image-rendering: pixelated;
+    margin: auto;
+    display: block;
+    margin-top: 3rem;
 }
