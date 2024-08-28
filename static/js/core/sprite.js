@@ -1,3 +1,5 @@
+import { Vector2 } from "../utils/vector2.js";
+
 export class Sprite {
     constructor(
         resource,
@@ -29,6 +31,7 @@ export class Sprite {
         this.accumulatedTime = 0;
         this.rotation = 0;
         this.animationDelay = animationDelay;
+        this.position = new Vector2(0, 0);
         this.frames = this.extractFrames(); // Array para armazenar os frames
     }
 
@@ -64,8 +67,11 @@ export class Sprite {
         // Salva o estado do contexto
         ctx.save();
 
+        this.position.x = Math.round(x + this.width / 2);
+        this.position.y = Math.round(y + this.height / 2);
+
         // Move o contexto para o centro do sprite
-        ctx.translate(Math.round(x + this.width / 2), Math.round(y + this.height / 2));
+        ctx.translate(this.position.x, this.position.y);
 
         // Aplica a rotação
         ctx.rotate(this.rotation);
@@ -82,6 +88,7 @@ export class Sprite {
             this.width,
             this.height
         );
+
 
         // Restaura o estado anterior do contexto
         ctx.restore();

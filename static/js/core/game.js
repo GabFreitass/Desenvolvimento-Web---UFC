@@ -114,7 +114,7 @@ export class Game {
 
     update(deltaTime) {
         this.handleInputs();
-        this.player.update(deltaTime);
+        this.player.update(deltaTime, this.enemies);
         this.enemies.forEach(enemy => enemy.update(deltaTime));
     }
 

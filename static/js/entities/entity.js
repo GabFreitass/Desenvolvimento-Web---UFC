@@ -6,7 +6,8 @@ const EntityState = {
 };
 
 export class Entity {
-    constructor(x, y, sprite, speed) {
+    constructor(x, y, sprite, speed, maxHealth = 100) {
+        this.health = maxHealth;
         this.position = new Vector2(x, y);
         this.prevPosition = new Vector2(x, y);
         this.sprite = sprite;
@@ -34,17 +35,21 @@ export class Entity {
         const dx = this.speed * (deltaTime / 1000);
         this.position.x += dx * Math.cos(this.direction.angle - Math.PI / 2);
         this.position.y += dx * Math.sin(this.direction.angle - Math.PI / 2);
-                
+
         this.sprite.update(deltaTime);
+    }
+
+    takeDamage(damage) {
+        this.health -= damage;
     }
 
     draw(ctx, alpha) {
         this.sprite.draw(
             ctx,
             this.prevPosition.x +
-                (this.position.x - this.prevPosition.x) * alpha,
+            (this.position.x - this.prevPosition.x) * alpha,
             this.prevPosition.y +
-                (this.position.y - this.prevPosition.y) * alpha
+            (this.position.y - this.prevPosition.y) * alpha
         );
     }
 }

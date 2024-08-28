@@ -29,7 +29,7 @@ export class Player extends Entity {
         this.sprite.rotation = Math.atan2(dy, dx) + Math.PI / 2;
     }
 
-    update(deltaTime) {
+    update(deltaTime, enemies = []) {
         super.update(deltaTime);
         this.updateRotation();
         this.accumulatedTime += deltaTime;
@@ -38,7 +38,7 @@ export class Player extends Entity {
             this.accumulatedTime = 0;
         }
         this.bullets = this.bullets.filter(bullet => {
-            bullet.update(deltaTime);
+            bullet.update(deltaTime, enemies);
             return bullet.isAlive;
         });
     }
@@ -68,11 +68,12 @@ export class Player extends Entity {
             GameResources.bullets,
             3,
             2,
-            120,
-            240,
+            20,
+            80,
             false,
             1,
-            1000
+            1000, null, 40,
+            80, 110, 41
         );
         const bulletX =
             this.position.x + this.sprite.width / 2 - bulletSprite.width / 2;
