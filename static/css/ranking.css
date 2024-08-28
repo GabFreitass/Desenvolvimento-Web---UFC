@@ -1,0 +1,86 @@
+body {
+    margin: 0;
+    overflow-x: hidden;
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+}
+
+:root {
+    --yellow-primary: #e8df31;
+    --red-primary: #d3252e;
+    --dark-primary: #000f17;
+}
+
+.background {
+    background-color: var(--dark-primary);
+    width: 100vw;
+    /* Ocupa 100% da largura da viewport */
+    min-height: 100vh;
+    background-image: url(../assets/space-home.jpg);
+    background-size: contain;
+    /* Escala a imagem para caber na div */
+    background-position: center;
+    /* Centraliza a imagem */
+    background-repeat: no-repeat;
+    /* Não repete a imagem */
+    overflow-y: auto;
+    /* Oculta qualquer excesso de conteúdo */
+    overflow-x: hidden;
+}
+
+.game-logo {
+    display: block;
+    width: calc(40vw + 100px);
+    max-width: 550px;
+    margin: auto;
+    margin-top: 5vh;
+    margin-bottom: 100px;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.game-font {
+    font-family: "Orbitron", sans-serif;
+    color: var(--yellow-primary);
+    transition: color 0.4s ease;
+}
+
+.ranking-controls {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.ranking-controls label {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.ranking-container {
+    width: min(600px, 80%);
+    height: 500px;
+    background-color: white;
+    margin-bottom: 2rem;
+    border-radius: 15px;
+    opacity: 0.4;
+}

@@ -20,6 +20,10 @@ app.get("/game", (req, res) => {
     res.redirect('/');
 });
 
+app.get("/ranking", (req, res) => {
+    res.render("ranking");
+});
+
 app.post("/game", (req, res) => {
     const playerName = req.body["player-name"];
     if (!playerName || playerName.trim() === '') {
