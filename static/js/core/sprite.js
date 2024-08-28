@@ -1,4 +1,5 @@
 import { Vector2 } from "../utils/vector2.js";
+import { GameConfig } from "./constants.js";
 
 export class Sprite {
     constructor(
@@ -89,9 +90,17 @@ export class Sprite {
             this.height
         );
 
-
         // Restaura o estado anterior do contexto
         ctx.restore();
+
+        if (GameConfig.SHOW_COLLISION_CIRCLES) {
+            // Desenha um círculo em torno da posição do sprite
+            ctx.beginPath();
+            ctx.arc(this.position.x, this.position.y, this.spriteHeight * GameConfig.ENTITY_COLLISION_RADIUS / 5, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'red'; // Cor do círculo
+            ctx.lineWidth = 2; // Espessura da linha
+            ctx.stroke();
+        }
     }
 
     // Método para avançar para o próximo frame
@@ -105,5 +114,9 @@ export class Sprite {
             }
             this.accumulatedTime = 0;
         }
+    }
+
+    checkCollision(otherSprite) {
+        return this.position.distTo(otherSprite.position) < (this.spriteHeight + otherSprite.spriteHeight) * GameConfig.ENTITY_COLLISION_RADIUS / 5;
     }
 }

@@ -16,9 +16,9 @@ app.get("/", (req, res) => {
     res.render("index");
 });
 
-// app.get("/game", (req, res) => {
-//     res.render("game", {});
-// });
+app.get("/game", (req, res) => {
+    res.redirect('/');
+});
 
 app.post("/game", (req, res) => {
     const playerName = req.body["player-name"];

@@ -8,6 +8,9 @@ export const GameStates = {
 
 export const GameConfig = {
     MAXFPS: 60,
+    MAXUPDATES: 5,
+    ENTITY_COLLISION_RADIUS: 1,
+    SHOW_COLLISION_CIRCLES: true,
 
     // controls
     MOVE_LEFT: "KeyA",

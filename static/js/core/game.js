@@ -40,7 +40,7 @@ export class Game {
             128,
             128,
             false,
-            5,
+            0,
             1000
         );
         const enemySprite = new Sprite(
@@ -50,10 +50,32 @@ export class Game {
             128,
             128,
             false,
-            4,
+            8,
+            1000
+        );
+        const enemySprite2 = new Sprite(
+            GameResources.spaceship,
+            1,
+            10,
+            128,
+            128,
+            false,
+            5,
+            1000
+        );
+        const enemySprite3 = new Sprite(
+            GameResources.spaceship,
+            1,
+            10,
+            128,
+            128,
+            false,
+            3,
             1000
         );
         this.enemies.push(new Player('Enemy', 400, 400, enemySprite, 100));
+        this.enemies.push(new Player('Enemy 2', 200, 200, enemySprite2, 100));
+        this.enemies.push(new Player('Enemy 3', 600, 800, enemySprite3, 100));
         this.player = new Player(
             playerName,
             (this.canvas.width - playerSprite.width) / 2,
@@ -71,30 +93,32 @@ export class Game {
     handleInputs() {
         // Atualiza a posição do cursor
         this.player.updateCursorPosition(this.gameInput.cursorPosition.x, this.gameInput.cursorPosition.y);
-        switch (this.gameInput.currentKey) {
-            case GameConfig.MOVE_LEFT:
-                this.player.move(-1, 0);
-                break;
-            case GameConfig.MOVE_RIGHT:
-                this.player.move(1, 0);
-                break;
-            case GameConfig.MOVE_UP:
-                this.player.move(0, 1);
-                break;
-            case GameConfig.MOVE_DOWN:
-                this.player.move(0, -1);
-                break;
-            case GameConfig.FIRE:
-                this.player.stop();
-                this.player.fire();
-                break;
-            // when key is released
-            case null:
-                this.player.stop();
-                break;
-            default:
-                this.player.stop();
-                break;
+        const keys = this.gameInput.inputKeys;
+
+        let moveX = 0;
+        let moveY = 0;
+
+        if (keys.includes(GameConfig.MOVE_LEFT)) {
+            moveX -= 1;
+        }
+        if (keys.includes(GameConfig.MOVE_RIGHT)) {
+            moveX += 1;
+        }
+        if (keys.includes(GameConfig.MOVE_UP)) {
+            moveY += 1;
+        }
+        if (keys.includes(GameConfig.MOVE_DOWN)) {
+            moveY -= 1;
+        }
+
+        if (moveX !== 0 || moveY !== 0) {
+            this.player.move(moveX, moveY);
+        } else {
+            this.player.stop();
+        }
+
+        if (keys.includes(GameConfig.FIRE)) {
+            this.player.fire();
         }
     }
 
@@ -126,14 +150,16 @@ export class Game {
 
     mainloop(timestamp) {
         if (this.state !== GameStates.RUNNING) return;
-        const deltaTime = timestamp - this.lastFrameTime;
+        const deltaTime = Math.min(timestamp - this.lastFrameTime, this.timeStep);
         this.lastFrameTime = timestamp;
 
         this.accumulatedTime += deltaTime;
+        let numUpdates = 0;
 
-        while (this.accumulatedTime >= this.timeStep) {
+        while (this.accumulatedTime >= this.timeStep && numUpdates <= GameConfig.MAXUPDATES) {
             this.update(this.timeStep);
             this.accumulatedTime -= this.timeStep;
+            numUpdates++;
         }
 
         let alpha = this.accumulatedTime / this.timeStep;

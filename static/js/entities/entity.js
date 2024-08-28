@@ -6,14 +6,14 @@ const EntityState = {
 };
 
 export class Entity {
-    constructor(x, y, sprite, speed, maxHealth = 100) {
-        this.health = maxHealth;
+    constructor(x, y, sprite, speed) {
         this.position = new Vector2(x, y);
         this.prevPosition = new Vector2(x, y);
         this.sprite = sprite;
         this.state = EntityState.IDLE;
         this.direction = new Vector2(0, 1); // should be an unit vector
         this.speed = speed;
+        this.enemies = [];
     }
 
     stop() {
@@ -22,10 +22,13 @@ export class Entity {
         this.direction.y = 0;
     }
 
-    move(directionX, directionY) {
+    move(directionX = null, directionY = null) {
         this.state = EntityState.MOVING;
-        this.direction.x = directionX;
-        this.direction.y = directionY;
+        if (directionX !== null || directionY !== null) {
+            this.direction.x = directionX ?? this.direction.x;
+            this.direction.y = directionY ?? this.direction.y;
+            this.direction.normalize();
+        }
     }
 
     update(deltaTime) {
@@ -35,12 +38,6 @@ export class Entity {
         const dx = this.speed * (deltaTime / 1000);
         this.position.x += dx * Math.cos(this.direction.angle - Math.PI / 2);
         this.position.y += dx * Math.sin(this.direction.angle - Math.PI / 2);
-
-        this.sprite.update(deltaTime);
-    }
-
-    takeDamage(damage) {
-        this.health -= damage;
     }
 
     draw(ctx, alpha) {
