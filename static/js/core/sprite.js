@@ -3,8 +3,8 @@ export class Sprite {
         resource,
         hFrames,
         vFrames,
-        width,
-        height,
+        width = null,
+        height = null,
         animatedSprite = false,
         frameIndex = 0,
         animationDelay = 1000,
@@ -19,8 +19,8 @@ export class Sprite {
         this.vFrames = vFrames; // Altura de cada frame
         this.spriteWidth = spriteWidth ?? this.frameWidth; // Largura do sprite em px
         this.spriteHeight = spriteHeight ?? this.frameHeight; // Altura do sprite em px
-        this.width = width; // largura a ser desenhada no canvas
-        this.height = height; // altura a ser desenhada no canvas
+        this.width = width ?? this.frameWidth; // largura a ser desenhada no canvas
+        this.height = height ?? this.frameHeight; // altura a ser desenhada no canvas
         this.totalFrames = totalFrames ?? hFrames * vFrames;
         this.spriteOffsetX = spriteOffsetX;
         this.spriteOffsetY = spriteOffsetY;
@@ -58,14 +58,14 @@ export class Sprite {
 
         const frame = this.frames[this.currentFrame];
 
-        const spriteTopLeftX = frame.x + this.spriteOffsetX + (this.frameWidth - this.spriteWidth) / 2;
-        const spriteTopLeftY = frame.y + this.spriteOffsetY + (this.frameHeight - this.spriteHeight) / 2;
+        const spriteTopLeftX = frame.x + this.spriteOffsetX;
+        const spriteTopLeftY = frame.y + this.spriteOffsetY;
 
         // Salva o estado do contexto
         ctx.save();
 
         // Move o contexto para o centro do sprite
-        ctx.translate(x + this.width / 2, y + this.height / 2);
+        ctx.translate(Math.round(x + this.width / 2), Math.round(y + this.height / 2));
 
         // Aplica a rotação
         ctx.rotate(this.rotation);

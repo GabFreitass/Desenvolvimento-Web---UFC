@@ -37,11 +37,9 @@ export class Player extends Entity {
             this.canFire = true;
             this.accumulatedTime = 0;
         }
-        this.bullets.forEach((bullet, index) => {
+        this.bullets = this.bullets.filter(bullet => {
             bullet.update(deltaTime);
-            if (!bullet.isAlive) {
-                delete this.bullets[index];
-            }
+            return bullet.isAlive;
         });
     }
 
@@ -59,9 +57,7 @@ export class Player extends Entity {
     }
 
     draw(ctx, alpha) {
-        this.bullets.forEach((bullet) => {
-            bullet.draw(ctx, alpha);
-        });
+        this.bullets.forEach(bullet => bullet.draw(ctx, alpha));
         super.draw(ctx, alpha);
         this.drawName(ctx);
     }
@@ -73,16 +69,15 @@ export class Player extends Entity {
             3,
             2,
             120,
-            360,
+            240,
             false,
             1,
-            1000,
-            null
+            1000
         );
         const bulletX =
             this.position.x + this.sprite.width / 2 - bulletSprite.width / 2;
         const bulletY = this.position.y + this.sprite.height / 2 - bulletSprite.height / 2;
-        const bullet = new Bullet(Math.round(bulletX), Math.round(bulletY), bulletSprite, 600);
+        const bullet = new Bullet(bulletX, bulletY, bulletSprite, 600);
         bullet.sprite.rotation = this.sprite.rotation;
         this.bullets.push(bullet);
         this.canFire = false;

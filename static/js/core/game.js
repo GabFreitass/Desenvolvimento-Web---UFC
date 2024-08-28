@@ -3,18 +3,22 @@ import { Sprite } from "./sprite.js";
 import { Player } from "../entities/player.js";
 import { Input } from "./input.js";
 import { GameConfig, GameResources, GameStates } from "./constants.js";
-import { gameCanvas, playerName } from "../main.js";
+import { playerName } from "../main.js";
 
 export class Game {
-    constructor() {
+    constructor(canvas) {
+        this.canvas = canvas;
         this.state = GameStates.UNREADY;
         this.player = null;
+        this.enemies = [];
         this.gameInput = null;
-        this.ctx = gameCanvas.getContext("2d");
+        this.ctx = canvas.getContext("2d");
         this.lastFrameTime = 0;
         this.accumulatedTime = 0;
         this.timeStep = 1e3 / GameConfig.MAXFPS;
         this.rafId = null;
+
+        this.mainloop = this.mainloop.bind(this);
     }
 
     async load() {
@@ -32,35 +36,34 @@ export class Game {
         const playerSprite = new Sprite(
             GameResources.spaceship,
             1,
-            12,
-            130,
-            105,
+            10,
+            128,
+            128,
             false,
-            3,
-            1000,
-            null,
-            130,
-            105
+            5,
+            1000
         );
+        const enemySprite = new Sprite(
+            GameResources.spaceship,
+            1,
+            10,
+            128,
+            128,
+            false,
+            4,
+            1000
+        );
+        this.enemies.push(new Player('Enemy', 400, 400, enemySprite, 100));
         this.player = new Player(
             playerName,
-            (gameCanvas.width - playerSprite.width) / 2,
-            (gameCanvas.height - playerSprite.height) / 2,
+            (this.canvas.width - playerSprite.width) / 2,
+            (this.canvas.height - playerSprite.height) / 2,
             playerSprite,
             500
         );
 
         // load game inputs
-        this.gameInput = new Input(gameCanvas);
-
-        // bind game methods
-        this.load = this.load.bind(this);
-        this.handleInputs = this.handleInputs.bind(this);
-        this.start = this.start.bind(this);
-        this.pause = this.pause.bind(this);
-        this.update = this.update.bind(this);
-        this.draw = this.draw.bind(this);
-        this.mainloop = this.mainloop.bind(this);
+        this.gameInput = new Input(this.canvas);
 
         this.state = GameStates.READY;
     }
@@ -98,6 +101,7 @@ export class Game {
     start() {
         if (this.state !== GameStates.READY) return;
         this.state = GameStates.RUNNING;
+        this.lastFrameTime = performance.now();
         this.rafId = requestAnimationFrame(this.mainloop);
     }
 
@@ -111,11 +115,13 @@ export class Game {
     update(deltaTime) {
         this.handleInputs();
         this.player.update(deltaTime);
+        this.enemies.forEach(enemy => enemy.update(deltaTime));
     }
 
     draw(alpha) {
-        this.ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.draw(this.ctx, alpha);
+        this.enemies.forEach(enemy => enemy.draw(this.ctx, alpha));
     }
 
     mainloop(timestamp) {
