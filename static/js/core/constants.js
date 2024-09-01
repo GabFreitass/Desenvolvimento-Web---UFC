@@ -22,6 +22,7 @@ export const GameConfig = {
     MAXUPDATES: 5,
     ENTITY_COLLISION_RADIUS: 1,
     SHOW_COLLISION_CIRCLES: false,
+    RESPAWN_ON_DEATH: true,
 
     gameParameters: {
         // game
@@ -32,7 +33,7 @@ export const GameConfig = {
         // player
         maxPlayerSpeed: 0.5,
         playerMass: 500,
-        playerCollisionDamage: 1,
+        playerCollisionDamage: 5,
 
         // bullet
         bulletSpeed: 1.5,

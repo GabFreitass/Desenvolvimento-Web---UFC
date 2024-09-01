@@ -37,16 +37,8 @@ export class Game {
         await Promise.all(loadResources);
 
         // load entities
-        const playerSprite = new Sprite(
-            GameResources.spaceship,
-            1,
-            10,
-            180,
-            180,
-            false,
-            0,
-            1000
-        );
+        this.respawnPlayer(this.canvas.width / 2, this.canvas.height / 2);
+
         const enemySprite = new Sprite(
             GameResources.spaceship,
             1,
@@ -57,13 +49,6 @@ export class Game {
             3,
             1000
         );
-        this.player = new Player(
-            playerName,
-            this.canvas.width / 2,
-            this.canvas.height / 2,
-            playerSprite
-        );
-        this.entities.players.push(this.player);
         this.entities.players.push(new Player(
             playerName,
             this.canvas.width / 3,
@@ -88,6 +73,26 @@ export class Game {
 
     gainScore(points) {
         this.score += points;
+    }
+
+    respawnPlayer(x, y) {
+        const playerSprite = new Sprite(
+            GameResources.spaceship,
+            1,
+            10,
+            180,
+            180,
+            false,
+            0,
+            1000
+        );
+        this.player = new Player(
+            playerName,
+            x,
+            y,
+            playerSprite
+        );
+        this.entities.players.push(this.player);
     }
 
     createBullet(x, y, rotation, shooter) {
@@ -153,6 +158,11 @@ export class Game {
     update(deltaTime) {
         scoreEl.textContent = this.score;
         this.handleInputs(this.gameInput, this.player);
+        if (GameConfig.RESPAWN_ON_DEATH) {
+            if (this.player.state === EntityState.DEAD) {
+                this.respawnPlayer(Math.random() * this.canvas.width, Math.random() * this.canvas.height);
+            }
+        }
         this.allEntities = this.allEntities.filter(entity => {
             entity.update(deltaTime, this.allEntities);
             return entity.state !== EntityState.DEAD;
