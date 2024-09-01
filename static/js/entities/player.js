@@ -8,7 +8,7 @@ export class Player extends Entity {
     constructor(name, x, y, sprite) {
         super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass);
         this.name = name;
-        this.fireRate = 1;
+        this.fireRate = 3;
         this.canFire = true;
         this.accumulatedTime = 0;
         this.maxHealth = 1000;

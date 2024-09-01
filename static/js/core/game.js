@@ -29,33 +29,16 @@ export class Game {
         this.state = GameStates.LOADING;
 
         // load resources
-        GameResources.spaceship = new Resource("assets/ships_0.png");
-        GameResources.bullets = new Resource("assets/bullets.png");
+        GameResources.spaceship = new Resource("/assets/ships_0.png");
+        GameResources.bullets = new Resource("/assets/bullets.png");
         const loadResources = Object.values(GameResources).map((resource) =>
             resource.load()
         );
         await Promise.all(loadResources);
 
         // load entities
-        this.respawnPlayer(this.canvas.width / 2, this.canvas.height / 2);
-
-        const enemySprite = new Sprite(
-            GameResources.spaceship,
-            1,
-            10,
-            180,
-            180,
-            false,
-            3,
-            1000
-        );
-        this.entities.players.push(new Player(
-            playerName,
-            this.canvas.width / 3,
-            this.canvas.height / 3,
-            enemySprite
-        ));
-
+        this.respawnPlayer(Math.random() * this.canvas.width, Math.random() * this.canvas.height);
+        
         // load game inputs
         this.gameInput = new Input(this.canvas);
 

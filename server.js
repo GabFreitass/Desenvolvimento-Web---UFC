@@ -1,4 +1,5 @@
 import express from "express";
+import { v4 as uuidv4 } from 'uuid';
 import { fileURLToPath } from "url";
 import { join, dirname } from "path";
 
@@ -16,8 +17,10 @@ app.get("/", (req, res) => {
     res.render("index");
 });
 
-app.get("/game", (req, res) => {
-    res.redirect('/');
+app.get("/game/:gameId", (req, res) => {
+    const gameId = req.params.gameId;
+    const playerName = req.query.playerName;
+    res.render("game", { playerName, gameId });
 });
 
 app.get("/ranking", (req, res) => {
@@ -29,7 +32,8 @@ app.post("/game", (req, res) => {
     if (!playerName || playerName.trim() === '') {
         return res.status(400).send('Nome do jogador é obrigatório');
     }
-    res.render("game", { playerName });
+    const gameId = '123';
+    res.redirect(`/game/${gameId}?playerName=${encodeURIComponent(playerName)}`);
 });
 
 app.listen(PORT, () => {
