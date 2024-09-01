@@ -2,6 +2,7 @@ import { Bullet } from "./bullet.js";
 import { Entity } from "./entity.js";
 import { GameResources, GameConfig, EntityState } from "../core/constants.js";
 import { Sprite } from "../core/sprite.js";
+import { Vector2 } from "../utils/vector2.js";
 
 export class Player extends Entity {
     constructor(name, x, y, sprite) {
@@ -20,27 +21,26 @@ export class Player extends Entity {
     }
 
     move(inputs) {
-        this.accelerationVec.setZero();
+        this.acceleration.setZero();
 
         if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
-            this.accelerationVec.x -= this.acceleration;
+            this.acceleration.x -= GameConfig.gameParameters.entityAcceleration;
         }
         if (inputs.includes(GameConfig.controls.MOVE_RIGHT)) {
-            this.accelerationVec.x += this.acceleration;
+            this.acceleration.x += GameConfig.gameParameters.entityAcceleration;
         }
         if (inputs.includes(GameConfig.controls.MOVE_UP)) {
-            this.accelerationVec.y -= this.acceleration;
+            this.acceleration.y -= GameConfig.gameParameters.entityAcceleration;
         }
         if (inputs.includes(GameConfig.controls.MOVE_DOWN)) {
-            this.accelerationVec.y += this.acceleration;
+            this.acceleration.y += GameConfig.gameParameters.entityAcceleration;
         }
 
         // Se não houver input, desacelera gradualmente
-        if (this.accelerationVec.isZero && this.state === EntityState.MOVING) {
-            this.accelerationVec.x = this.velocity.x;
-            this.accelerationVec.y = this.velocity.y;
-            this.accelerationVec.normalize();
-            this.accelerationVec.scale(-GameConfig.gameParameters.entityDeacceleration);
+        if (this.acceleration.isZero && this.state === EntityState.MOVING) {
+            this.acceleration = this.velocity;
+            this.acceleration = this.acceleration.normalize();
+            this.acceleration = this.acceleration.scale(-GameConfig.gameParameters.entityDeacceleration);
         }
     }
 
@@ -51,9 +51,9 @@ export class Player extends Entity {
     }
 
     update(deltaTime, cursorPosition, inputs, otherEntities) {
+        super.update(deltaTime, otherEntities);
         this.move(inputs);
         this.updateRotation(cursorPosition);
-        super.update(deltaTime, otherEntities);
         if (inputs.includes(GameConfig.controls.FIRE)) {
             this.fire();
         }

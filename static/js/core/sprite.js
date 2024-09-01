@@ -46,8 +46,8 @@ export class Sprite {
         return this.frames[this.currentFrame];
     }
 
-    get colisionRadius() {
-        return this.spriteHeight * GameConfig.ENTITY_COLLISION_RADIUS / 5;
+    get collisionRadius() {
+        return this.height * GameConfig.ENTITY_COLLISION_RADIUS / 4;
     }
 
     // Método para extrair os frames do sprite sheet
@@ -93,7 +93,7 @@ export class Sprite {
         if (GameConfig.SHOW_COLLISION_CIRCLES) {
             // Desenha um círculo em torno da posição do sprite
             ctx.beginPath();
-            ctx.arc(0, 0, this.colisionRadius, 0, 2 * Math.PI);
+            ctx.arc(0, 0, this.collisionRadius, 0, 2 * Math.PI);
             ctx.strokeStyle = 'red'; // Cor do círculo
             ctx.lineWidth = 2; // Espessura da linha
             ctx.stroke();

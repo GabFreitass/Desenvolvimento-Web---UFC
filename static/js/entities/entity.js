@@ -1,17 +1,19 @@
-// Entidade pode ser: PROJÉTIL, PLAYERS...
-
-
 import { Vector2 } from "../utils/vector2.js";
-import { GameConfig, EntityState } from "../core/constants.js";
+import { GameConfig } from "../core/constants.js";
+
+const EntityState = {
+    MOVING: "MOVING",
+    IDLE: "IDLE",
+};
 
 export class Entity {
-    constructor(x, y, sprite, maxVelocity) {
+    constructor(x, y, sprite, maxVelocity, mass = 100) {
         this.position = new Vector2(x, y);
         this.sprite = sprite;
         this.maxVelocity = maxVelocity;
         this.velocity = new Vector2(0, 0);
-        this.accelerationVec = new Vector2(0, 0);
-        this.acceleration = GameConfig.gameParameters.entityAcceleration; // para controlar a aceleração
+        this.acceleration = new Vector2(0, 0);
+        this.mass = mass; // Adicionamos massa para cálculos de colisão
     }
 
     get state() {
@@ -26,39 +28,66 @@ export class Entity {
         this.velocity.setZero();
     }
 
-    update(deltaTime, otherEntities = []) {
-        this.sprite.update(deltaTime);
-
-        // Aplica a aceleração à velocidade
-        this.velocity.add(this.accelerationVec);
+    update(deltaTime, entities = []) {
+        this.velocity = this.velocity.add(this.acceleration);
 
         if (this.state === EntityState.IDLE) return;
-
         // Limita a velocidade ao máximo
         if (this.velocity.magnitude > this.maxVelocity) {
-            this.velocity.normalize();
-            this.velocity.scale(this.maxVelocity);
+            this.velocity = this.velocity.normalize();
+            this.velocity = this.velocity.scale(this.maxVelocity);
         }
 
         if (this.velocity.magnitude < 0.1) {
             this.stop();
         }
-        const newPosition = new Vector2(this.position.x + this.velocity.x * deltaTime, this.position.y + this.velocity.y * deltaTime);
 
-        // if not colliding with any other entity
-        if (!otherEntities.some((entity) => this.checkCollision(newPosition, entity))) {
-            this.position.x = newPosition.x;
-            this.position.y = newPosition.y;
-        } else {
-            this.stop();
+        const newPosition = new Vector2(
+            this.position.x + this.velocity.x * deltaTime,
+            this.position.y + this.velocity.y * deltaTime
+        );
+
+        this.handleCollisions(newPosition, entities);
+
+        this.position = newPosition;
+    }
+
+    handleCollisions(newPosition, entities) {
+        for (const entity of entities) {
+            if (entity === this) continue;
+
+            if (this.checkCollision(newPosition, entity)) {
+                this.resolveCollision(entity);
+                this.stop();
+            }
         }
     }
 
     checkCollision(newPosition, otherEntity) {
-        if (newPosition.distTo(otherEntity.position) < this.sprite.colisionRadius + otherEntity.sprite.colisionRadius) {
-            return true;
-        }
-        return false;
+        const distance = newPosition.distTo(otherEntity.position);
+        return distance < this.sprite.collisionRadius + otherEntity.sprite.collisionRadius;
+    }
+
+    resolveCollision(otherEntity) {
+        const normal = this.position.subtract(otherEntity.position).normalize();
+        const relativeVelocity = this.velocity.subtract(otherEntity.velocity);
+        const velocityAlongNormal = relativeVelocity.dot(normal);
+
+        if (velocityAlongNormal > 0) return; // Já estão se afastando
+
+        const restitution = 0.2; // Coeficiente de restituição (elasticidade da colisão)
+        const impulseScalar = -(1 + restitution) * velocityAlongNormal;
+        const impulse = normal.scale(impulseScalar / (1 / this.mass + 1 / otherEntity.mass));
+
+        // Aplica o impulso às velocidades
+        this.velocity = this.velocity.add(impulse.scale(1 / this.mass));
+        otherEntity.velocity = otherEntity.velocity.subtract(impulse.scale(1 / otherEntity.mass));
+
+        // Separa as entidades para evitar sobreposição
+        const overlap = (this.sprite.collisionRadius + otherEntity.sprite.collisionRadius) - this.position.distTo(otherEntity.position);
+        const separation = normal.scale(overlap / 2);
+        this.position = this.position.add(separation);
+        otherEntity.position = otherEntity.position.subtract(separation);
     }
 
     draw(ctx, alpha) {

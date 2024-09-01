@@ -17,7 +17,7 @@ export class Game {
         this.accumulatedTime = 0;
         this.timeStep = 1e3 / GameConfig.MAXFPS;
         this.rafId = null;
-        this.enemies = [];
+        this.otherEntities = [];
         this.mainloop = this.mainloop.bind(this);
     }
 
@@ -60,7 +60,7 @@ export class Game {
             this.canvas.height / 2,
             playerSprite
         );
-        this.enemies.push(new Enemy(
+        this.otherEntities.push(new Enemy(
             this.canvas.width / 3,
             this.canvas.height / 3,
             enemySprite
@@ -91,14 +91,14 @@ export class Game {
 
     update(deltaTime) {
         this.handleInputs();
-        this.player.update(deltaTime, this.gameInput.cursorPosition, this.gameInput.inputKeys, this.enemies);
-        this.enemies.forEach(enemy => enemy.update(deltaTime));
+        this.player.update(deltaTime, this.gameInput.cursorPosition, this.gameInput.inputKeys, this.otherEntities);
+        this.otherEntities.forEach(entity => entity.update(deltaTime));
     }
 
     draw(alpha) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.draw(this.ctx, alpha);
-        this.enemies.forEach(enemy => enemy.draw(this.ctx, alpha));
+        this.otherEntities.forEach(entity => entity.draw(this.ctx, alpha));
     }
 
     mainloop(timestamp) {

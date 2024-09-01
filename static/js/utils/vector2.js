@@ -28,31 +28,27 @@ export class Vector2 {
         this.y = 0;
     }
 
-    multiply(otherVector) {
+    dot(otherVector) {
         return this.x * otherVector.x + this.y * otherVector.y;
     }
 
     add(otherVector) {
-        this.x += otherVector.x;
-        this.y += otherVector.y;
+        return new Vector2(this.x + otherVector.x, this.y + otherVector.y);
     }
 
     subtract(otherVector) {
-        this.x -= otherVector.x;
-        this.y -= otherVector.y;
+        return new Vector2(this.x - otherVector.x, this.y - otherVector.y);
     }
 
     scale(scalar) {
-        this.x *= scalar;
-        this.y *= scalar;
+        return new Vector2(this.x * scalar, this.y * scalar);
     }
 
     normalize() {
         if (this.isZero) {
             throw new Error("Cannot normalize a zero vector");
         }
-        this.x /= this.magnitude;
-        this.y /= this.magnitude;
+        return new Vector2(this.x / this.magnitude, this.y / this.magnitude);
     }
 
     toString() {
