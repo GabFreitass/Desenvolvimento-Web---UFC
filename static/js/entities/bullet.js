@@ -2,7 +2,7 @@ import { EntityState, EntityType, GameConfig } from "../core/constants.js";
 import { Entity } from "./entity.js";
 
 export class Bullet extends Entity {
-    constructor(x, y, sprite, rotation) {
+    constructor(x, y, sprite, rotation, shooter) {
         super(x, y, sprite, GameConfig.gameParameters.bulletSpeed, GameConfig.gameParameters.bulletDamage, EntityType.BULLET, GameConfig.gameParameters.bulletMass);
         this.durationTime = GameConfig.gameParameters.bulletDuration;
         this.accumulatedTime = 0;
@@ -13,6 +13,7 @@ export class Bullet extends Entity {
         this.acceleration.y = this.velocity.y;
         this.acceleration = this.acceleration.normalize();
         this.acceleration = this.acceleration.scale(-GameConfig.gameParameters.frictionFactor * this.mass);
+        this.shooter = shooter;
     }
 
     update(dt, otherEntities) {

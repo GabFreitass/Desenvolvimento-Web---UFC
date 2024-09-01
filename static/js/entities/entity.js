@@ -1,6 +1,6 @@
 import { Vector2 } from "../utils/vector2.js";
 import { EntityState, EntityType, GameConfig } from "../core/constants.js";
-import { Game } from "../core/game.js";
+import { game, gameCanvas } from "../main.js";
 
 export class Entity {
     constructor(x, y, sprite, maxVelocity, damage, entityType, mass) {
@@ -27,6 +27,7 @@ export class Entity {
     }
 
     stop() {
+        this.acceleration.setZero();
         this.velocity.setZero();
     }
 
@@ -56,8 +57,26 @@ export class Entity {
         );
 
         this.handleCollisions(newPosition, entities);
+        this.updatePosition(newPosition);
+    }
 
+    updatePosition(newPosition) {
         this.position = newPosition;
+        this.clampPositionToCanvas();
+    }
+
+    clampPositionToCanvas() {
+        const canvasRect = gameCanvas.getBoundingClientRect();
+        const scaleX = gameCanvas.width / canvasRect.width;
+        const scaleY = gameCanvas.height / canvasRect.height;
+        this.position.x %= scaleX * canvasRect.width;
+        if (this.position.x < 0) {
+            this.position.x = scaleX * canvasRect.width;
+        }
+        this.position.y %= scaleY * canvasRect.height + this.sprite.collisionRadius;
+        if (this.position.y < 0) {
+            this.position.y = scaleY * canvasRect.height;
+        }
     }
 
     handleCollisions(newPosition, entities) {
@@ -65,14 +84,31 @@ export class Entity {
             if (entity === this) continue;
 
             if (this.checkCollision(newPosition, entity)) {
+                // no collision with bullet and its shooter
+                if (this.entityType === EntityType.BULLET && entity === this.shooter) {
+                    continue;
+                };
+
+                // no collision with shooter and its bullet
+                if (this.entityType === EntityType.PLAYER && entity.entityType === EntityType.BULLET && entity.shooter === this) {
+                    continue;
+                }
+
                 this.resolveCollision(entity);
+
+                if (this.entityType === EntityType.BULLET) {
+                    this.stop();
+                }
                 if (this.entityType === EntityType.PLAYER) {
                     this.takeDamage(entity.damage);
                 }
                 if (entity.entityType === EntityType.PLAYER) {
                     entity.takeDamage(this.damage);
+
+                    if (entity.state === EntityState.DEAD) {
+                        game.gainScore(1);
+                    }
                 }
-                this.stop();
             }
         }
     }
@@ -89,7 +125,7 @@ export class Entity {
 
         if (velocityAlongNormal > 0) return; // Já estão se afastando
 
-        const restitution = 0.8; // Coeficiente de restituição (elasticidade da colisão)
+        const restitution = 0.5; // Coeficiente de restituição (elasticidade da colisão)
         const impulseScalar = -(1 + restitution) * velocityAlongNormal;
         const impulse = normal.scale(impulseScalar / (1 / this.mass + 1 / otherEntity.mass));
 

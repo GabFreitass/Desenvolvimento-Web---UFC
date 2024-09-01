@@ -21,7 +21,7 @@ export const GameConfig = {
     MAXFPS: 60,
     MAXUPDATES: 5,
     ENTITY_COLLISION_RADIUS: 1,
-    SHOW_COLLISION_CIRCLES: true,
+    SHOW_COLLISION_CIRCLES: false,
 
     gameParameters: {
         // game
@@ -32,11 +32,11 @@ export const GameConfig = {
         // player
         maxPlayerSpeed: 0.5,
         playerMass: 500,
-        playerCollisionDamage: 20,
+        playerCollisionDamage: 1,
 
         // bullet
         bulletSpeed: 1.5,
-        bulletMass: 50,
+        bulletMass: 80,
         bulletDuration: 2000, // ms
         bulletDamage: 30
     },

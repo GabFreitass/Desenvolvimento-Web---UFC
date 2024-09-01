@@ -18,9 +18,17 @@ canvas#game-canvas {
     overflow: hidden;
     width: 100%;
     max-width: 1024px;
-    border: 5px solid black;
+    border: 5px solid white;
     image-rendering: pixelated;
+    border-radius: 5px;
     margin: auto;
     display: block;
     margin-top: 3rem;
+}
+
+h1.game-score {
+    font-family: 'Orbitron', sans-serif;
+    margin: 2rem 0;
+    color: white;
+    text-align: center;
 }

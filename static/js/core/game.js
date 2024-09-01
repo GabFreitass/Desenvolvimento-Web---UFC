@@ -2,8 +2,9 @@ import { Resource } from "./resource.js"
 import { Sprite } from "./sprite.js";
 import { Player } from "../entities/player.js";
 import { Input } from "./input.js";
-import { EntityState, GameConfig, GameResources, GameStates } from "./constants.js";
-import { playerName } from "../main.js";
+import { Bullet } from "../entities/bullet.js";
+import { EntityState, EntityType, GameConfig, GameResources, GameStates } from "./constants.js";
+import { playerName, scoreEl } from "../main.js";
 
 export class Game {
     constructor(canvas) {
@@ -16,7 +17,11 @@ export class Game {
         this.accumulatedTime = 0;
         this.timeStep = 1e3 / GameConfig.MAXFPS;
         this.rafId = null;
-        this.otherEntities = [];
+        this.score = 0;
+        this.entities = {
+            players: [],
+            bullets: []
+        };
         this.mainloop = this.mainloop.bind(this);
     }
 
@@ -36,21 +41,20 @@ export class Game {
             GameResources.spaceship,
             1,
             10,
-            128,
-            128,
+            180,
+            180,
             false,
             0,
             1000
         );
-        // load entities
         const enemySprite = new Sprite(
             GameResources.spaceship,
             1,
             10,
-            128,
-            128,
+            180,
+            180,
             false,
-            0,
+            3,
             1000
         );
         this.player = new Player(
@@ -59,7 +63,8 @@ export class Game {
             this.canvas.height / 2,
             playerSprite
         );
-        this.otherEntities.push(new Player(
+        this.entities.players.push(this.player);
+        this.entities.players.push(new Player(
             playerName,
             this.canvas.width / 3,
             this.canvas.height / 3,
@@ -72,12 +77,45 @@ export class Game {
         this.state = GameStates.READY;
     }
 
+    get allEntities() {
+        return [...this.entities.players, ...this.entities.bullets];
+    }
+
+    set allEntities(entities) {
+        this.entities.players = entities.filter(entity => entity.entityType === EntityType.PLAYER);
+        this.entities.bullets = entities.filter(entity => entity.entityType === EntityType.BULLET);
+    }
+
+    gainScore(points) {
+        this.score += points;
+    }
+
+    createBullet(x, y, rotation, shooter) {
+        const bulletSprite = new Sprite(
+            GameResources.bullets,
+            3,
+            2,
+            20,
+            80,
+            false,
+            1,
+            1000, null, 40,
+            80, 110, 41
+        );
+        const bullet = new Bullet(x, y, bulletSprite, rotation, shooter);
+        this.entities.bullets.push(bullet);
+    }
+
     handleInputs(gameInput, player) {
         const inputs = gameInput.inputKeys;
         this.updatePlayerRotation(gameInput.cursorPosition, player);
         player.acceleration.setZero();
         const accelerationFactor = player.mass * 1e-2;
 
+        if (inputs.includes(GameConfig.controls.FIRE)) {
+            player.fire();
+            return;
+        }
         if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
             player.acceleration.x -= accelerationFactor;
         }
@@ -89,8 +127,6 @@ export class Game {
         }
         if (inputs.includes(GameConfig.controls.MOVE_DOWN)) {
             player.acceleration.y += accelerationFactor;
-        } if (inputs.includes(GameConfig.controls.FIRE)) {
-            player.fire();
         }
     }
 
@@ -115,18 +151,17 @@ export class Game {
     }
 
     update(deltaTime) {
+        scoreEl.textContent = this.score;
         this.handleInputs(this.gameInput, this.player);
-        this.player.update(deltaTime, this.otherEntities);
-        this.otherEntities = this.otherEntities.filter(entity => {
-            entity.update(deltaTime);
+        this.allEntities = this.allEntities.filter(entity => {
+            entity.update(deltaTime, this.allEntities);
             return entity.state !== EntityState.DEAD;
         });
     }
 
     draw(alpha) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.player.draw(this.ctx, alpha);
-        this.otherEntities.forEach(entity => entity.draw(this.ctx, alpha));
+        this.allEntities.forEach(entity => entity.draw(this.ctx, alpha));
     }
 
     mainloop(timestamp) {

@@ -2,13 +2,13 @@ import { Bullet } from "./bullet.js";
 import { Entity } from "./entity.js";
 import { GameResources, GameConfig, EntityType } from "../core/constants.js";
 import { Sprite } from "../core/sprite.js";
+import { game } from "../main.js";
 
 export class Player extends Entity {
     constructor(name, x, y, sprite) {
         super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass);
         this.name = name;
-        this.bullets = [];
-        this.fireRate = 4;
+        this.fireRate = 1;
         this.canFire = true;
         this.accumulatedTime = 0;
         this.maxHealth = 1000;
@@ -22,17 +22,13 @@ export class Player extends Entity {
         }
     }
 
-    update(deltaTime, otherEntities = []) {
-        super.update(deltaTime, otherEntities);
+    update(deltaTime, entities) {
+        super.update(deltaTime, entities);
         this.accumulatedTime += deltaTime;
         if (this.accumulatedTime >= 1e3 / this.fireRate) {
             this.canFire = true;
             this.accumulatedTime = 0;
         }
-        this.bullets = this.bullets.filter(bullet => {
-            bullet.update(deltaTime, otherEntities);
-            return bullet.isAlive;
-        });
     }
 
     drawName(ctx) {
@@ -71,7 +67,6 @@ export class Player extends Entity {
 
     draw(ctx, alpha) {
         super.draw(ctx, alpha);
-        this.bullets.forEach(bullet => bullet.draw(ctx, alpha));
         this.drawHealth(ctx); // Chamando o novo método para desenhar a barra de vida
         this.drawName(ctx);
     }
@@ -79,19 +74,7 @@ export class Player extends Entity {
     fire() {
         if (!this.canFire) return;
         this.stop();
-        const bulletSprite = new Sprite(
-            GameResources.bullets,
-            3,
-            2,
-            20,
-            80,
-            false,
-            1,
-            1000, null, 40,
-            80, 110, 41
-        );
-        const bullet = new Bullet(this.position.x, this.position.y, bulletSprite, this.sprite.rotation);
-        this.bullets.push(bullet);
+        game.createBullet(this.position.x, this.position.y, this.sprite.rotation, this);
         this.canFire = false;
     }
 }

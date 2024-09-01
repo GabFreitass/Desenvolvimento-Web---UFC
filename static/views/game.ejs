@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Space Invaders</title>
-        <link rel="stylesheet" href="css/game-styles.css" />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
-            rel="stylesheet"
-        />
-    </head>
-    <body>
-        <canvas
-            data-player-name="<%= playerName %>"
-            id="game-canvas"
-            width="1440"
-            height="1024"
-        ></canvas>
-        <script src="js/main.js" type="module"></script>
-    </body>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space Invaders</title>
+    <link rel="stylesheet" href="css/game-styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+    <h1 class="game-score">SCORE: <span id="score">0</span></h1>
+    </h1>
+    <canvas data-player-name="<%= playerName %>" id="game-canvas" width="1440" height="1024"></canvas>
+    <script src="js/main.js" type="module"></script>
+</body>
+
 </html>
