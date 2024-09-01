@@ -19,7 +19,7 @@ export const GameConfig = {
 
     gameParameters: {
         // entity
-        entityAcceleration: 0.1,
+        entityAcceleration: 0.03,
         entityDeacceleration: 0.01,
 
         // player

@@ -38,7 +38,7 @@ export class Entity {
             this.velocity = this.velocity.scale(this.maxVelocity);
         }
 
-        if (this.velocity.magnitude < 0.1) {
+        if (this.velocity.magnitude < GameConfig.gameParameters.entityDeacceleration) {
             this.stop();
         }
 
