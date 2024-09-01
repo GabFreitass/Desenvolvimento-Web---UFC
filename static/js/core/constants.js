@@ -18,8 +18,17 @@ export const GameConfig = {
     SHOW_COLLISION_CIRCLES: true,
 
     gameParameters: {
+        // entity
         entityAcceleration: 0.5,
-        entityDeacceleration: 0.9
+        entityDeacceleration: 0.01,
+
+        // player
+        maxPlayerSpeed: 0.5,
+
+        // bullet
+        initialBulletSpeed: 1,
+        bulletDeacceleration: 0.001,
+        bulletDuration: 2000, // ms
     },
 
     controls: {// controls

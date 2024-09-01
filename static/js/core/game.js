@@ -1,6 +1,7 @@
 import { Resource } from "./resource.js"
 import { Sprite } from "./sprite.js";
 import { Player } from "../entities/player.js";
+import { Enemy } from "../entities/enemy.js";
 import { Input } from "./input.js";
 import { GameConfig, GameResources, GameStates } from "./constants.js";
 import { playerName } from "../main.js";
@@ -16,7 +17,7 @@ export class Game {
         this.accumulatedTime = 0;
         this.timeStep = 1e3 / GameConfig.MAXFPS;
         this.rafId = null;
-
+        this.enemies = [];
         this.mainloop = this.mainloop.bind(this);
     }
 
@@ -42,13 +43,28 @@ export class Game {
             0,
             1000
         );
+        // load entities
+        const enemySprite = new Sprite(
+            GameResources.spaceship,
+            1,
+            10,
+            128,
+            128,
+            false,
+            0,
+            1000
+        );
         this.player = new Player(
             playerName,
             this.canvas.width / 2,
             this.canvas.height / 2,
-            playerSprite,
-            0.5
+            playerSprite
         );
+        this.enemies.push(new Enemy(
+            this.canvas.width / 3,
+            this.canvas.height / 3,
+            enemySprite
+        ));
 
         // load game inputs
         this.gameInput = new Input(this.canvas);
@@ -57,12 +73,6 @@ export class Game {
     }
 
     handleInputs() {
-        const keys = this.gameInput.inputKeys;
-        this.player.move(keys);
-
-        if (keys.includes(GameConfig.controls.FIRE)) {
-            this.player.fire();
-        }
     }
 
     start() {
@@ -81,12 +91,14 @@ export class Game {
 
     update(deltaTime) {
         this.handleInputs();
-        this.player.update(deltaTime, this.gameInput.cursorPosition);
+        this.player.update(deltaTime, this.gameInput.cursorPosition, this.gameInput.inputKeys, this.enemies);
+        this.enemies.forEach(enemy => enemy.update(deltaTime));
     }
 
     draw(alpha) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.draw(this.ctx, alpha);
+        this.enemies.forEach(enemy => enemy.draw(this.ctx, alpha));
     }
 
     mainloop(timestamp) {

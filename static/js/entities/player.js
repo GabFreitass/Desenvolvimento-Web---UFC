@@ -4,15 +4,15 @@ import { GameResources, GameConfig, EntityState } from "../core/constants.js";
 import { Sprite } from "../core/sprite.js";
 
 export class Player extends Entity {
-    constructor(name, x, y, sprite, maxVelocity) {
-        super(x, y, sprite, maxVelocity);
+    constructor(name, x, y, sprite) {
+        super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed);
         this.name = name;
         this.bullets = [];
-        this.fireRate = 4;
+        this.fireRate = 1;
         this.canFire = true;
         this.accumulatedTime = 0;
         this.maxHealth = 1000;
-        this.health = this.maxHealth; // Adicionando saúde inicial do jogador
+        this.health = this.maxHealth;
     }
 
     takeDamage(damage) {
@@ -20,7 +20,6 @@ export class Player extends Entity {
     }
 
     move(inputs) {
-        this.state = EntityState.MOVING;
         this.accelerationVec.setZero();
 
         if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
@@ -36,21 +35,12 @@ export class Player extends Entity {
             this.accelerationVec.y += this.acceleration;
         }
 
-        // Aplica a aceleração à velocidade
-        this.velocity.add(this.accelerationVec);
-
-        // Limita a velocidade ao máximo
-        if (this.velocity.magnitude > this.maxVelocity) {
-            this.velocity.normalize();
-            this.velocity.scale(this.maxVelocity);
-        }
-
         // Se não houver input, desacelera gradualmente
-        if (this.accelerationVec.isZero) {
-            this.velocity.scale(GameConfig.gameParameters.entityDeacceleration); // Fator de desaceleração
-            if (this.velocity.magnitude < 0.1) {
-                this.stop();
-            }
+        if (this.accelerationVec.isZero && this.state === EntityState.MOVING) {
+            this.accelerationVec.x = this.velocity.x;
+            this.accelerationVec.y = this.velocity.y;
+            this.accelerationVec.normalize();
+            this.accelerationVec.scale(-GameConfig.gameParameters.entityDeacceleration);
         }
     }
 
@@ -60,16 +50,20 @@ export class Player extends Entity {
         this.sprite.rotation = Math.atan2(dy, dx) + Math.PI / 2;
     }
 
-    update(deltaTime, cursorPosition) {
-        super.update(deltaTime);
+    update(deltaTime, cursorPosition, inputs, otherEntities) {
+        this.move(inputs);
         this.updateRotation(cursorPosition);
+        super.update(deltaTime, otherEntities);
+        if (inputs.includes(GameConfig.controls.FIRE)) {
+            this.fire();
+        }
         this.accumulatedTime += deltaTime;
         if (this.accumulatedTime >= 1e3 / this.fireRate) {
             this.canFire = true;
             this.accumulatedTime = 0;
         }
         this.bullets = this.bullets.filter(bullet => {
-            bullet.update(deltaTime);
+            bullet.update(deltaTime, otherEntities);
             return bullet.isAlive;
         });
     }
@@ -129,7 +123,7 @@ export class Player extends Entity {
             1000, null, 40,
             80, 110, 41
         );
-        const bullet = new Bullet(this.position.x, this.position.y, bulletSprite, 600, this.sprite.rotation);
+        const bullet = new Bullet(this.position.x, this.position.y, bulletSprite, this.sprite.rotation);
         this.bullets.push(bullet);
         this.canFire = false;
     }
