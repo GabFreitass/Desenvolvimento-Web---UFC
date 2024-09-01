@@ -1,15 +1,14 @@
 import { Bullet } from "./bullet.js";
 import { Entity } from "./entity.js";
-import { GameResources, GameConfig, EntityState } from "../core/constants.js";
+import { GameResources, GameConfig, EntityType } from "../core/constants.js";
 import { Sprite } from "../core/sprite.js";
-import { Vector2 } from "../utils/vector2.js";
 
 export class Player extends Entity {
     constructor(name, x, y, sprite) {
-        super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed);
+        super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass);
         this.name = name;
         this.bullets = [];
-        this.fireRate = 1;
+        this.fireRate = 4;
         this.canFire = true;
         this.accumulatedTime = 0;
         this.maxHealth = 1000;
@@ -18,45 +17,13 @@ export class Player extends Entity {
 
     takeDamage(damage) {
         this.health = Math.max(this.health - damage, 0);
-    }
-
-    move(inputs) {
-        this.acceleration.setZero();
-
-        if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
-            this.acceleration.x -= GameConfig.gameParameters.entityAcceleration;
-        }
-        if (inputs.includes(GameConfig.controls.MOVE_RIGHT)) {
-            this.acceleration.x += GameConfig.gameParameters.entityAcceleration;
-        }
-        if (inputs.includes(GameConfig.controls.MOVE_UP)) {
-            this.acceleration.y -= GameConfig.gameParameters.entityAcceleration;
-        }
-        if (inputs.includes(GameConfig.controls.MOVE_DOWN)) {
-            this.acceleration.y += GameConfig.gameParameters.entityAcceleration;
-        }
-
-        // Se não houver input, desacelera gradualmente
-        if (this.acceleration.isZero && this.state === EntityState.MOVING) {
-            this.acceleration = this.velocity;
-            this.acceleration = this.acceleration.normalize();
-            this.acceleration = this.acceleration.scale(-GameConfig.gameParameters.entityDeacceleration);
+        if (this.health === 0) {
+            this.isAlive = false;
         }
     }
 
-    updateRotation(cursorPosition) {
-        const dx = cursorPosition.x - this.position.x;
-        const dy = cursorPosition.y - this.position.y;
-        this.sprite.rotation = Math.atan2(dy, dx) + Math.PI / 2;
-    }
-
-    update(deltaTime, cursorPosition, inputs, otherEntities) {
+    update(deltaTime, otherEntities = []) {
         super.update(deltaTime, otherEntities);
-        this.move(inputs);
-        this.updateRotation(cursorPosition);
-        if (inputs.includes(GameConfig.controls.FIRE)) {
-            this.fire();
-        }
         this.accumulatedTime += deltaTime;
         if (this.accumulatedTime >= 1e3 / this.fireRate) {
             this.canFire = true;

@@ -9,6 +9,12 @@ export const GameStates = {
 export const EntityState = {
     MOVING: "MOVING",
     IDLE: "IDLE",
+    DEAD: "DEAD"
+};
+
+export const EntityType = {
+    PLAYER: "PLAYER",
+    BULLET: "BULLET",
 };
 
 export const GameConfig = {
@@ -18,17 +24,21 @@ export const GameConfig = {
     SHOW_COLLISION_CIRCLES: true,
 
     gameParameters: {
+        // game
+        frictionFactor: 1e-4,
+
         // entity
-        entityAcceleration: 0.03,
-        entityDeacceleration: 0.01,
 
         // player
         maxPlayerSpeed: 0.5,
+        playerMass: 500,
+        playerCollisionDamage: 20,
 
         // bullet
-        initialBulletSpeed: 1,
-        bulletDeacceleration: 0.001,
+        bulletSpeed: 1.5,
+        bulletMass: 50,
         bulletDuration: 2000, // ms
+        bulletDamage: 30
     },
 
     controls: {// controls

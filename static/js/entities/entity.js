@@ -1,22 +1,24 @@
 import { Vector2 } from "../utils/vector2.js";
-import { GameConfig } from "../core/constants.js";
-
-const EntityState = {
-    MOVING: "MOVING",
-    IDLE: "IDLE",
-};
+import { EntityState, EntityType, GameConfig } from "../core/constants.js";
+import { Game } from "../core/game.js";
 
 export class Entity {
-    constructor(x, y, sprite, maxVelocity, mass = 100) {
+    constructor(x, y, sprite, maxVelocity, damage, entityType, mass) {
         this.position = new Vector2(x, y);
         this.sprite = sprite;
+        this.damage = damage;
         this.maxVelocity = maxVelocity;
         this.velocity = new Vector2(0, 0);
         this.acceleration = new Vector2(0, 0);
+        this.entityType = entityType;
         this.mass = mass; // Adicionamos massa para cálculos de colisão
+        this.isAlive = true;
     }
 
     get state() {
+        if (!this.isAlive) {
+            return EntityState.DEAD;
+        }
         if (this.velocity.isZero) {
             return EntityState.IDLE;
         } else {
@@ -28,17 +30,23 @@ export class Entity {
         this.velocity.setZero();
     }
 
-    update(deltaTime, entities = []) {
+    update(deltaTime, entities) {
+        if (this.state === EntityState.DEAD) return;
+
         this.velocity = this.velocity.add(this.acceleration);
 
         if (this.state === EntityState.IDLE) return;
+
+        // apply friction
+        this.velocity = this.velocity.scale(1 - (GameConfig.gameParameters.frictionFactor * this.mass));
+
         // Limita a velocidade ao máximo
         if (this.velocity.magnitude > this.maxVelocity) {
             this.velocity = this.velocity.normalize();
             this.velocity = this.velocity.scale(this.maxVelocity);
         }
 
-        if (this.velocity.magnitude < GameConfig.gameParameters.entityDeacceleration) {
+        if (this.velocity.magnitude < 0.1) {
             this.stop();
         }
 
@@ -58,6 +66,12 @@ export class Entity {
 
             if (this.checkCollision(newPosition, entity)) {
                 this.resolveCollision(entity);
+                if (this.entityType === EntityType.PLAYER) {
+                    this.takeDamage(entity.damage);
+                }
+                if (entity.entityType === EntityType.PLAYER) {
+                    entity.takeDamage(this.damage);
+                }
                 this.stop();
             }
         }
@@ -75,7 +89,7 @@ export class Entity {
 
         if (velocityAlongNormal > 0) return; // Já estão se afastando
 
-        const restitution = 0.2; // Coeficiente de restituição (elasticidade da colisão)
+        const restitution = 0.8; // Coeficiente de restituição (elasticidade da colisão)
         const impulseScalar = -(1 + restitution) * velocityAlongNormal;
         const impulse = normal.scale(impulseScalar / (1 / this.mass + 1 / otherEntity.mass));
 

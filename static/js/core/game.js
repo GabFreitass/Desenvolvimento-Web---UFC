@@ -1,9 +1,8 @@
 import { Resource } from "./resource.js"
 import { Sprite } from "./sprite.js";
 import { Player } from "../entities/player.js";
-import { Enemy } from "../entities/enemy.js";
 import { Input } from "./input.js";
-import { GameConfig, GameResources, GameStates } from "./constants.js";
+import { EntityState, GameConfig, GameResources, GameStates } from "./constants.js";
 import { playerName } from "../main.js";
 
 export class Game {
@@ -60,7 +59,8 @@ export class Game {
             this.canvas.height / 2,
             playerSprite
         );
-        this.otherEntities.push(new Enemy(
+        this.otherEntities.push(new Player(
+            playerName,
             this.canvas.width / 3,
             this.canvas.height / 3,
             enemySprite
@@ -72,7 +72,32 @@ export class Game {
         this.state = GameStates.READY;
     }
 
-    handleInputs() {
+    handleInputs(gameInput, player) {
+        const inputs = gameInput.inputKeys;
+        this.updatePlayerRotation(gameInput.cursorPosition, player);
+        player.acceleration.setZero();
+        const accelerationFactor = player.mass * 1e-2;
+
+        if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
+            player.acceleration.x -= accelerationFactor;
+        }
+        if (inputs.includes(GameConfig.controls.MOVE_RIGHT)) {
+            player.acceleration.x += accelerationFactor;
+        }
+        if (inputs.includes(GameConfig.controls.MOVE_UP)) {
+            player.acceleration.y -= accelerationFactor;
+        }
+        if (inputs.includes(GameConfig.controls.MOVE_DOWN)) {
+            player.acceleration.y += accelerationFactor;
+        } if (inputs.includes(GameConfig.controls.FIRE)) {
+            player.fire();
+        }
+    }
+
+    updatePlayerRotation(cursorPosition, player) {
+        const dx = cursorPosition.x - player.position.x;
+        const dy = cursorPosition.y - player.position.y;
+        player.sprite.rotation = Math.atan2(dy, dx) + Math.PI / 2;
     }
 
     start() {
@@ -90,9 +115,12 @@ export class Game {
     }
 
     update(deltaTime) {
-        this.handleInputs();
-        this.player.update(deltaTime, this.gameInput.cursorPosition, this.gameInput.inputKeys, this.otherEntities);
-        this.otherEntities.forEach(entity => entity.update(deltaTime));
+        this.handleInputs(this.gameInput, this.player);
+        this.player.update(deltaTime, this.otherEntities);
+        this.otherEntities = this.otherEntities.filter(entity => {
+            entity.update(deltaTime);
+            return entity.state !== EntityState.DEAD;
+        });
     }
 
     draw(alpha) {
