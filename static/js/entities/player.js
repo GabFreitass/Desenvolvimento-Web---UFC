@@ -1,50 +1,75 @@
 import { Bullet } from "./bullet.js";
 import { Entity } from "./entity.js";
-import { GameResources } from "../core/constants.js";
+import { GameResources, GameConfig, EntityState } from "../core/constants.js";
 import { Sprite } from "../core/sprite.js";
-import { Vector2 } from "../utils/vector2.js";
 
 export class Player extends Entity {
-    constructor(name, x, y, sprite, speed) {
-        super(x, y, sprite, speed);
+    constructor(name, x, y, sprite, maxVelocity) {
+        super(x, y, sprite, maxVelocity);
         this.name = name;
         this.bullets = [];
         this.fireRate = 4;
         this.canFire = true;
         this.accumulatedTime = 0;
-        this.cursorPosition = new Vector2(0, 0);
         this.maxHealth = 1000;
         this.health = this.maxHealth; // Adicionando saúde inicial do jogador
-    }
-
-    updateCursorPosition(x, y) {
-        this.cursorPosition.x = x;
-        this.cursorPosition.y = y;
-        this.updateRotation();
     }
 
     takeDamage(damage) {
         this.health = Math.max(this.health - damage, 0);
     }
 
-    updateRotation() {
-        const centerX = this.position.x + this.sprite.width / 2;
-        const centerY = this.position.y + this.sprite.height / 2;
-        const dx = this.cursorPosition.x - centerX;
-        const dy = this.cursorPosition.y - centerY;
+    move(inputs) {
+        this.state = EntityState.MOVING;
+        this.accelerationVec.setZero();
+
+        if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
+            this.accelerationVec.x -= this.acceleration;
+        }
+        if (inputs.includes(GameConfig.controls.MOVE_RIGHT)) {
+            this.accelerationVec.x += this.acceleration;
+        }
+        if (inputs.includes(GameConfig.controls.MOVE_UP)) {
+            this.accelerationVec.y -= this.acceleration;
+        }
+        if (inputs.includes(GameConfig.controls.MOVE_DOWN)) {
+            this.accelerationVec.y += this.acceleration;
+        }
+
+        // Aplica a aceleração à velocidade
+        this.velocity.add(this.accelerationVec);
+
+        // Limita a velocidade ao máximo
+        if (this.velocity.magnitude > this.maxVelocity) {
+            this.velocity.normalize();
+            this.velocity.scale(this.maxVelocity);
+        }
+
+        // Se não houver input, desacelera gradualmente
+        if (this.accelerationVec.isZero) {
+            this.velocity.scale(GameConfig.gameParameters.entityDeacceleration); // Fator de desaceleração
+            if (this.velocity.magnitude < 0.1) {
+                this.stop();
+            }
+        }
+    }
+
+    updateRotation(cursorPosition) {
+        const dx = cursorPosition.x - this.position.x;
+        const dy = cursorPosition.y - this.position.y;
         this.sprite.rotation = Math.atan2(dy, dx) + Math.PI / 2;
     }
 
-    update(deltaTime, enemies = []) {
+    update(deltaTime, cursorPosition) {
         super.update(deltaTime);
-        this.updateRotation();
+        this.updateRotation(cursorPosition);
         this.accumulatedTime += deltaTime;
         if (this.accumulatedTime >= 1e3 / this.fireRate) {
             this.canFire = true;
             this.accumulatedTime = 0;
         }
         this.bullets = this.bullets.filter(bullet => {
-            bullet.update(deltaTime, enemies);
+            bullet.update(deltaTime);
             return bullet.isAlive;
         });
     }
@@ -57,16 +82,16 @@ export class Player extends Entity {
         ctx.textBaseline = "middle"; // Alinhamento vertical
 
         // Desenha o texto no canvas
-        const nameX = this.position.x + this.sprite.width / 2;
-        const nameY = this.position.y + this.sprite.height + 30;
-        ctx.fillText(this.name, Math.round(nameX), Math.round(nameY));
+        const nameX = this.position.x;
+        const nameY = this.position.y + this.sprite.height / 2 + 20;
+        ctx.fillText(this.name, nameX, nameY);
     }
 
     drawHealth(ctx) {
         const healthBarWidth = 100;
         const healthBarHeight = 10;
-        const x = this.position.x + this.sprite.width / 2 - healthBarWidth / 2;
-        const y = this.position.y - 20;
+        const x = this.position.x - healthBarWidth / 2;
+        const y = this.position.y - this.sprite.height / 2 - 20;
 
         // Desenha a barra de fundo
         ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
@@ -84,15 +109,15 @@ export class Player extends Entity {
     }
 
     draw(ctx, alpha) {
-        this.bullets.forEach(bullet => bullet.draw(ctx, alpha));
         super.draw(ctx, alpha);
-        this.drawName(ctx);
+        this.bullets.forEach(bullet => bullet.draw(ctx, alpha));
         this.drawHealth(ctx); // Chamando o novo método para desenhar a barra de vida
+        this.drawName(ctx);
     }
 
     fire() {
-        this.stop();
         if (!this.canFire) return;
+        this.stop();
         const bulletSprite = new Sprite(
             GameResources.bullets,
             3,
@@ -104,11 +129,7 @@ export class Player extends Entity {
             1000, null, 40,
             80, 110, 41
         );
-        const bulletX =
-            this.position.x + this.sprite.width / 2 - bulletSprite.width / 2;
-        const bulletY = this.position.y + this.sprite.height / 2 - bulletSprite.height / 2;
-        const bullet = new Bullet(bulletX, bulletY, bulletSprite, 600);
-        bullet.sprite.rotation = this.sprite.rotation;
+        const bullet = new Bullet(this.position.x, this.position.y, bulletSprite, 600, this.sprite.rotation);
         this.bullets.push(bullet);
         this.canFire = false;
     }

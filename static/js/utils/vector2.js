@@ -4,7 +4,7 @@ export class Vector2 {
         this.y = y;
     }
 
-    get value() {
+    get magnitude() {
         return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
     }
 
@@ -12,11 +12,20 @@ export class Vector2 {
         return Math.atan2(this.x, this.y);
     }
 
+    get isZero() {
+        return this.x === 0 && this.y === 0;
+    }
+
     distTo(otherVector) {
         return Math.sqrt(
             Math.pow(otherVector.x - this.x, 2) +
-                Math.pow(otherVector.y - this.y, 2)
+            Math.pow(otherVector.y - this.y, 2)
         );
+    }
+
+    setZero() {
+        this.x = 0;
+        this.y = 0;
     }
 
     multiply(otherVector) {
@@ -24,11 +33,13 @@ export class Vector2 {
     }
 
     add(otherVector) {
-        return new Vector2(this.x + otherVector.x, this.y + otherVector.y);
+        this.x += otherVector.x;
+        this.y += otherVector.y;
     }
 
     subtract(otherVector) {
-        return new Vector2(this.x - otherVector.x, this.y - otherVector.y);
+        this.x -= otherVector.x;
+        this.y -= otherVector.y;
     }
 
     scale(scalar) {
@@ -37,11 +48,11 @@ export class Vector2 {
     }
 
     normalize() {
-        if (this.value === 0) {
+        if (this.isZero) {
             throw new Error("Cannot normalize a zero vector");
         }
-        this.x /= this.value;
-        this.y /= this.value;
+        this.x /= this.magnitude;
+        this.y /= this.magnitude;
     }
 
     toString() {

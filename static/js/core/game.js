@@ -10,7 +10,6 @@ export class Game {
         this.canvas = canvas;
         this.state = GameStates.UNREADY;
         this.player = null;
-        this.enemies = [];
         this.gameInput = null;
         this.ctx = canvas.getContext("2d");
         this.lastFrameTime = 0;
@@ -43,45 +42,12 @@ export class Game {
             0,
             1000
         );
-        const enemySprite = new Sprite(
-            GameResources.spaceship,
-            1,
-            10,
-            128,
-            128,
-            false,
-            8,
-            1000
-        );
-        const enemySprite2 = new Sprite(
-            GameResources.spaceship,
-            1,
-            10,
-            128,
-            128,
-            false,
-            5,
-            1000
-        );
-        const enemySprite3 = new Sprite(
-            GameResources.spaceship,
-            1,
-            10,
-            128,
-            128,
-            false,
-            3,
-            1000
-        );
-        this.enemies.push(new Player('Enemy', 400, 400, enemySprite, 100));
-        this.enemies.push(new Player('Enemy 2', 200, 200, enemySprite2, 100));
-        this.enemies.push(new Player('Enemy 3', 600, 800, enemySprite3, 100));
         this.player = new Player(
             playerName,
-            (this.canvas.width - playerSprite.width) / 2,
-            (this.canvas.height - playerSprite.height) / 2,
+            this.canvas.width / 2,
+            this.canvas.height / 2,
             playerSprite,
-            500
+            0.5
         );
 
         // load game inputs
@@ -91,33 +57,10 @@ export class Game {
     }
 
     handleInputs() {
-        // Atualiza a posição do cursor
-        this.player.updateCursorPosition(this.gameInput.cursorPosition.x, this.gameInput.cursorPosition.y);
         const keys = this.gameInput.inputKeys;
+        this.player.move(keys);
 
-        let moveX = 0;
-        let moveY = 0;
-
-        if (keys.includes(GameConfig.MOVE_LEFT)) {
-            moveX -= 1;
-        }
-        if (keys.includes(GameConfig.MOVE_RIGHT)) {
-            moveX += 1;
-        }
-        if (keys.includes(GameConfig.MOVE_UP)) {
-            moveY += 1;
-        }
-        if (keys.includes(GameConfig.MOVE_DOWN)) {
-            moveY -= 1;
-        }
-
-        if (moveX !== 0 || moveY !== 0) {
-            this.player.move(moveX, moveY);
-        } else {
-            this.player.stop();
-        }
-
-        if (keys.includes(GameConfig.FIRE)) {
+        if (keys.includes(GameConfig.controls.FIRE)) {
             this.player.fire();
         }
     }
@@ -138,34 +81,28 @@ export class Game {
 
     update(deltaTime) {
         this.handleInputs();
-        this.player.update(deltaTime, this.enemies);
-        this.enemies.forEach(enemy => enemy.update(deltaTime));
+        this.player.update(deltaTime, this.gameInput.cursorPosition);
     }
 
     draw(alpha) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.player.draw(this.ctx, alpha);
-        this.enemies.forEach(enemy => enemy.draw(this.ctx, alpha));
     }
 
     mainloop(timestamp) {
         if (this.state !== GameStates.RUNNING) return;
-        const deltaTime = Math.min(timestamp - this.lastFrameTime, this.timeStep);
+
+        this.accumulatedTime += timestamp - this.lastFrameTime;
         this.lastFrameTime = timestamp;
 
-        this.accumulatedTime += deltaTime;
-        let numUpdates = 0;
-
-        while (this.accumulatedTime >= this.timeStep && numUpdates <= GameConfig.MAXUPDATES) {
+        while (this.accumulatedTime >= this.timeStep) {
             this.update(this.timeStep);
             this.accumulatedTime -= this.timeStep;
-            numUpdates++;
         }
 
-        let alpha = this.accumulatedTime / this.timeStep;
+        const alpha = this.accumulatedTime / this.timeStep;
         this.draw(alpha);
 
-        // request next frame
         this.rafId = requestAnimationFrame(this.mainloop);
     }
 }

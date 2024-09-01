@@ -32,7 +32,6 @@ export class Sprite {
         this.accumulatedTime = 0;
         this.rotation = 0;
         this.animationDelay = animationDelay;
-        this.position = new Vector2(0, 0);
         this.frames = this.extractFrames(); // Array para armazenar os frames
     }
 
@@ -41,6 +40,10 @@ export class Sprite {
     }
     get frameHeight() {
         return this.image.height / this.vFrames;
+    }
+
+    get frame() {
+        return this.frames[this.currentFrame];
     }
 
     // Método para extrair os frames do sprite sheet
@@ -60,22 +63,15 @@ export class Sprite {
             return; // Não desenha até que a imagem esteja carregada
         }
 
-        const frame = this.frames[this.currentFrame];
+        const spriteTopLeftX = this.frame.x + this.spriteOffsetX;
+        const spriteTopLeftY = this.frame.y + this.spriteOffsetY;
 
-        const spriteTopLeftX = frame.x + this.spriteOffsetX;
-        const spriteTopLeftY = frame.y + this.spriteOffsetY;
-
-        // Salva o estado do contexto
         ctx.save();
 
-        this.position.x = Math.round(x + this.width / 2);
-        this.position.y = Math.round(y + this.height / 2);
+        ctx.translate(x, y);
 
-        // Move o contexto para o centro do sprite
-        ctx.translate(this.position.x, this.position.y);
-
-        // Aplica a rotação
         ctx.rotate(this.rotation);
+
 
         // Desenha o sprite com a origem no centro
         ctx.drawImage(
@@ -84,23 +80,23 @@ export class Sprite {
             spriteTopLeftY,
             this.spriteWidth,
             this.spriteHeight,
-            -this.width / 2, // Ajusta a posição para centralizar o sprite
-            -this.height / 2, // Ajusta a posição para centralizar o sprite
+            -this.width / 2,
+            -this.height / 2,
             this.width,
             this.height
         );
 
-        // Restaura o estado anterior do contexto
-        ctx.restore();
-
         if (GameConfig.SHOW_COLLISION_CIRCLES) {
             // Desenha um círculo em torno da posição do sprite
             ctx.beginPath();
-            ctx.arc(this.position.x, this.position.y, this.spriteHeight * GameConfig.ENTITY_COLLISION_RADIUS / 5, 0, 2 * Math.PI);
+            ctx.arc(0, 0, this.spriteHeight * GameConfig.ENTITY_COLLISION_RADIUS / 5, 0, 2 * Math.PI);
             ctx.strokeStyle = 'red'; // Cor do círculo
             ctx.lineWidth = 2; // Espessura da linha
             ctx.stroke();
         }
+
+        // Restaura o estado anterior do contexto
+        ctx.restore();
     }
 
     // Método para avançar para o próximo frame
@@ -114,9 +110,5 @@ export class Sprite {
             }
             this.accumulatedTime = 0;
         }
-    }
-
-    checkCollision(otherSprite) {
-        return this.position.distTo(otherSprite.position) < (this.spriteHeight + otherSprite.spriteHeight) * GameConfig.ENTITY_COLLISION_RADIUS / 5;
     }
 }
