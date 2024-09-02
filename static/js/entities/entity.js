@@ -3,7 +3,7 @@ import { EntityState, EntityType, GameConfig } from "../core/constants.js";
 import { game, gameCanvas } from "../main.js";
 
 export class Entity {
-    constructor(x, y, sprite, maxVelocity, damage, entityType, mass) {
+    constructor(x, y, sprite, maxVelocity, damage, entityType, mass, rotation) {
         this.position = new Vector2(x, y);
         this.sprite = sprite;
         this.damage = damage;
@@ -11,6 +11,7 @@ export class Entity {
         this.velocity = new Vector2(0, 0);
         this.acceleration = new Vector2(0, 0);
         this.entityType = entityType;
+        this.rotation = rotation;
         this.mass = mass; // Adicionamos massa para cálculos de colisão
         this.isAlive = true;
     }
@@ -32,6 +33,7 @@ export class Entity {
     }
 
     update(deltaTime, entities) {
+        this.sprite.update(deltaTime, this.rotation);
         if (this.state === EntityState.DEAD) return;
 
         this.velocity = this.velocity.add(this.acceleration);
@@ -91,6 +93,12 @@ export class Entity {
 
                 // no collision with shooter and its bullet
                 if (this.entityType === EntityType.PLAYER && entity.entityType === EntityType.BULLET && entity.shooter === this) {
+                    continue;
+                }
+
+                // no collision with bullet and another bullet
+                if (this.entityType === EntityType.BULLET && entity.entityType === EntityType.BULLET) {
+                    this.stop();
                     continue;
                 }
 

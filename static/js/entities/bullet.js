@@ -3,12 +3,11 @@ import { Entity } from "./entity.js";
 
 export class Bullet extends Entity {
     constructor(x, y, sprite, rotation, shooter) {
-        super(x, y, sprite, GameConfig.gameParameters.bulletSpeed, GameConfig.gameParameters.bulletDamage, EntityType.BULLET, GameConfig.gameParameters.bulletMass);
+        super(x, y, sprite, GameConfig.gameParameters.bulletSpeed, GameConfig.gameParameters.bulletDamage, EntityType.BULLET, GameConfig.gameParameters.bulletMass, rotation);
         this.durationTime = GameConfig.gameParameters.bulletDuration;
         this.accumulatedTime = 0;
-        this.sprite.rotation = rotation;
-        this.velocity.x = this.maxVelocity * Math.cos(this.sprite.rotation - Math.PI / 2);
-        this.velocity.y = this.maxVelocity * Math.sin(this.sprite.rotation - Math.PI / 2);
+        this.velocity.x = this.maxVelocity * Math.cos(rotation - Math.PI / 2);
+        this.velocity.y = this.maxVelocity * Math.sin(rotation - Math.PI / 2);
         this.acceleration.x = this.velocity.x;
         this.acceleration.y = this.velocity.y;
         this.acceleration = this.acceleration.normalize();

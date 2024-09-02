@@ -5,10 +5,13 @@ import { Sprite } from "../core/sprite.js";
 import { game } from "../main.js";
 
 export class Player extends Entity {
-    constructor(name, x, y, sprite) {
-        super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass);
+    constructor(name, x, y, sprite, playerId, character, rotation = 0) {
+        super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass, rotation);
         this.name = name;
         this.fireRate = 3;
+        this.sprite.frameIndex = character;
+        this.playerId = playerId;
+        this.character = character;
         this.canFire = true;
         this.accumulatedTime = 0;
         this.maxHealth = 1000;
@@ -74,7 +77,7 @@ export class Player extends Entity {
     fire() {
         if (!this.canFire) return;
         this.stop();
-        game.createBullet(this.position.x, this.position.y, this.sprite.rotation, this);
+        game.createBullet(this.position.x, this.position.y, this.rotation, this);
         this.canFire = false;
     }
 }

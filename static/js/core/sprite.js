@@ -104,7 +104,8 @@ export class Sprite {
     }
 
     // Método para avançar para o próximo frame
-    update(dt) {
+    update(dt, rotation) {
+        this.rotation = rotation;
         if (!this.animatedSprite) return;
         this.accumulatedTime += dt;
         if (this.accumulatedTime >= this.animationDelay) {

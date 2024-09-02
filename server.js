@@ -1,17 +1,14 @@
-import express from "express";
-import { v4 as uuidv4 } from 'uuid';
-import { fileURLToPath } from "url";
-import { join, dirname } from "path";
+const express = require('express');
+const http = require('http');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const app = express();
-const PORT = process.env.PORT || 8088;
+const server = http.createServer(app);
+module.exports = { server };
 
-app.set("views", join(__dirname, "static/views"));
+app.use(express.static('static'));
 app.set("view engine", "ejs");
+app.set("views", "static/views");
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(join(__dirname, "static")));
 
 app.get("/", (req, res) => {
     res.render("index");
@@ -36,6 +33,3 @@ app.post("/game", (req, res) => {
     res.redirect(`/game/${gameId}?playerName=${encodeURIComponent(playerName)}`);
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
