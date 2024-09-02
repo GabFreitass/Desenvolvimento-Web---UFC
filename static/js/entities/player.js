@@ -1,14 +1,13 @@
-import { Bullet } from "./bullet.js";
+
 import { Entity } from "./entity.js";
-import { GameResources, GameConfig, EntityType } from "../core/constants.js";
-import { Sprite } from "../core/sprite.js";
+import { GameConfig, EntityType } from "../core/constants.js";
 import { game } from "../main.js";
 
 export class Player extends Entity {
     constructor(name, x, y, sprite, playerId, character, rotation = 0) {
         super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass, rotation);
         this.name = name;
-        this.fireRate = 3;
+        this.fireRate = 0.5;
         this.sprite.frameIndex = character;
         this.playerId = playerId;
         this.character = character;
@@ -77,7 +76,8 @@ export class Player extends Entity {
     fire() {
         if (!this.canFire) return;
         this.stop();
-        game.createBullet(this.position.x, this.position.y, this.rotation, this);
+        const bullet = game.createBullet(this.position.x, this.position.y, this.rotation, this.playerId);
+        game.gameWebSocket.send('bulletJoined', { bullet });
         this.canFire = false;
     }
 }

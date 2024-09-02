@@ -86,21 +86,22 @@ export class Entity {
             if (entity === this) continue;
 
             if (this.checkCollision(newPosition, entity)) {
-                // no collision with bullet and its shooter
-                if (this.entityType === EntityType.BULLET && entity === this.shooter) {
-                    continue;
-                };
-
-                // no collision with shooter and its bullet
-                if (this.entityType === EntityType.PLAYER && entity.entityType === EntityType.BULLET && entity.shooter === this) {
-                    continue;
-                }
-
                 // no collision with bullet and another bullet
                 if (this.entityType === EntityType.BULLET && entity.entityType === EntityType.BULLET) {
                     this.stop();
                     continue;
                 }
+
+                // no collision with bullet and its shooter
+                if (this.entityType === EntityType.BULLET && entity.playerId === this.shooterId) {
+                    continue;
+                };
+
+                // no collision with shooter and its bullet
+                if (this.entityType === EntityType.PLAYER && entity.entityType === EntityType.BULLET && entity.shooterId === this.playerId) {
+                    continue;
+                }
+
 
                 this.resolveCollision(entity);
 

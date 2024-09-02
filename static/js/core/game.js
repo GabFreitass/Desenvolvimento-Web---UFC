@@ -33,6 +33,10 @@ export class Game {
         return this.entities.players.find(player => player.playerId === this.playerId);
     }
 
+    get allEntities() {
+        return [...this.entities.players, ...this.entities.bullets];
+    }
+
     async load() {
         this.state = GameStates.LOADING;
         this.gameWebSocket.connect();
@@ -61,15 +65,6 @@ export class Game {
         this.state = GameStates.READY;
     }
 
-    get allEntities() {
-        return [...this.entities.players, ...this.entities.bullets];
-    }
-
-    set allEntities(entities) {
-        this.entities.players = entities.filter(entity => entity.entityType === EntityType.PLAYER);
-        this.entities.bullets = entities.filter(entity => entity.entityType === EntityType.BULLET);
-    }
-
     respawnPlayer(name, x, y, playerId, character, rotation) {
         const playerSprite = new Sprite(
             GameResources.spaceship,
@@ -94,7 +89,7 @@ export class Game {
         this.score += points;
     }
 
-    createBullet(x, y, rotation, shooter) {
+    createBullet(x, y, rotation, shooterId) {
         const bulletSprite = new Sprite(
             GameResources.bullets,
             3,
@@ -106,8 +101,8 @@ export class Game {
             1000, null, 40,
             80, 110, 41
         );
-        const bullet = new Bullet(x, y, bulletSprite, rotation, shooter);
-        this.entities.bullets.push(bullet);
+        const bullet = new Bullet(x, y, bulletSprite, rotation, shooterId);
+        return bullet;
     }
 
     handleInputs(gameInput, player) {
@@ -157,16 +152,17 @@ export class Game {
     update(deltaTime) {
         scoreEl.textContent = this.score;
         this.handleInputs(this.gameInput, this.player);
-        if (GameConfig.RESPAWN_ON_DEATH) {
-            if (this.player.state === EntityState.DEAD) {
-                this.respawnPlayer(Math.random() * this.canvas.width, Math.random() * this.canvas.height);
-            }
-        }
-        this.allEntities = this.allEntities.filter(entity => {
-            entity.update(deltaTime, this.allEntities);
-            return entity.state !== EntityState.DEAD;
+        this.entities.players = this.entities.players.filter(player => {
+            player.update(deltaTime, this.allEntities);
+            return player.state !== EntityState.DEAD;
         });
-        // this.gameWebSocket.send('playerUpdate', { player: this.player });
+
+        this.entities.bullets = this.entities.bullets.filter(bullet => {
+            bullet.update(deltaTime, this.allEntities);
+            return bullet.state !== EntityState.DEAD;
+        });
+        this.gameWebSocket.send('playerUpdate', { player: this.player });
+        this.gameWebSocket.send('bulletsUpdate', { bullets: this.entities.bullets });
     }
 
     drawLatency() {
@@ -195,7 +191,8 @@ export class Game {
     draw(alpha) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawLatency();
-        this.allEntities.forEach(entity => entity.draw(this.ctx, alpha));
+        this.entities.players.forEach(player => player.draw(this.ctx, alpha));
+        this.entities.bullets.forEach(bullet => bullet.draw(this.ctx, alpha));
     }
 
     mainloop(timestamp) {

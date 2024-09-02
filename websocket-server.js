@@ -4,6 +4,7 @@ const { server } = require('./server.js');
 const wss = new WebSocket.Server({ server });
 
 const players = new Map();
+let bullets = [];
 
 wss.on('connection', (ws, req) => {
     const clientIp = req.socket.remoteAddress;
@@ -15,7 +16,6 @@ wss.on('connection', (ws, req) => {
     ws.on('message', (message) => {
         try {
             const data = JSON.parse(message);
-            console.log('Mensagem recebida do tipo: ' + data.type);
 
             switch (data.type) {
                 case 'playerJoined':
@@ -33,6 +33,15 @@ wss.on('connection', (ws, req) => {
                         players.set(playerId, data.player);
                         broadcastPlayers();
                     }
+                    break;
+
+                case 'bulletJoined':
+                    bullets.push(data.bullet);
+                    broadcastBullets();
+                    break;
+
+                case 'bulletsUpdate':
+                    bullets = data.bullets;
                     break;
 
                 default:
@@ -53,6 +62,16 @@ wss.on('connection', (ws, req) => {
 function broadcastPlayers() {
     const playersList = Array.from(players.values());
     const message = JSON.stringify({ type: 'syncPlayers', players: playersList });
+
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(message);
+        }
+    });
+}
+
+function broadcastBullets() {
+    const message = JSON.stringify({ type: 'syncBullets', bullets });
 
     wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {

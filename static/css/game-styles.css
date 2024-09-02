@@ -16,7 +16,7 @@ canvas#game-canvas {
     background-position: center; /* Centraliza a imagem */
     background-repeat: repeat; /* Não repete a imagem */
     overflow: hidden;
-    width: 100%;
+    width: 80%;
     max-width: 1024px;
     border: 5px solid white;
     image-rendering: pixelated;

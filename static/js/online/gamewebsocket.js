@@ -29,7 +29,6 @@ export class GameWebSocket {
             this.socket.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
-                    console.log('Mensagem recebida do tipo: ', data.type);
                     if (data.type in this.messageHandlers) {
                         this.messageHandlers[data.type](data);
                     }
@@ -95,8 +94,6 @@ export class GameWebSocket {
         });
 
         this.on('syncPlayers', (data) => {
-            console.log('Sincronizando jogadores com o servidor');
-            console.log(data.players);
             this.game.entities.players = data.players.map(player => this.game.respawnPlayer(
                 player.name,
                 player.position.x,
@@ -108,6 +105,12 @@ export class GameWebSocket {
             if (this.game.state === GameStates.READY) {
                 this.game.start();
             }
+        });
+
+        this.on('syncBullets', (data) => {
+            this.game.entities.bullets = data.bullets.map(bullet => this.game.createBullet(
+                bullet.position.x, bullet.position.y, bullet.rotation, bullet.shooterId
+            ));
         });
     }
 }
