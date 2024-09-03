@@ -1,35 +1,86 @@
-const express = require('express');
-const http = require('http');
+const WebSocket = require('ws');
+const { server } = require('./httpServer.js');
+const GameState = require('./websocket/gameState.js');
+const { ServerConfig } = require('./websocket/config.js');
 
-const app = express();
-const server = http.createServer(app);
-module.exports = { server };
+const wss = new WebSocket.Server({ server });
 
-app.use(express.static('static'));
-app.set("view engine", "ejs");
-app.set("views", "static/views");
-app.use(express.urlencoded({ extended: true }));
+const gamesRooms = new Map(); // associa cada gameId com um GameState
+const clientGameMap = new Map(); // associa cada clientId com seu gameId
 
-app.get("/", (req, res) => {
-    res.render("index");
+wss.on('connection', (ws, req) => {
+    const clientIp = req.socket.remoteAddress;
+    const clientPort = req.socket.remotePort;
+    const clientId = `${clientIp}:${clientPort}`;
+
+    console.log(`Novo cliente conectado: ${clientId}`);
+
+    ws.on('message', (message) => {
+        try {
+            const data = JSON.parse(message);
+
+            switch (data.type) {
+                case 'ping':
+                    const pongMessage = JSON.stringify({ type: 'pong', time: data.time });
+                    ws.send(pongMessage);
+                    break;
+
+                case 'playerJoined':
+                    const { gameId, playerName, playerCharacter } = data;
+                    // se a sala do jogo ainda não havia sido criada, cria ela
+                    if (!gamesRooms.has(gameId)) {
+                        const gameState = new GameState(gameId);
+                        gamesRooms.set(gameId, gameState);
+                    }
+                    const gameState = gamesRooms.get(gameId);
+                    gameState.createPlayer(clientId, playerName, playerCharacter);
+                    clientGameMap.set(clientId, gameId);
+                    break;
+
+                default:
+                    console.log(`Mensagem não reconhecida: ${data.type}`);
+            }
+        } catch (error) {
+            console.error('Erro ao processar mensagem:', error);
+        }
+    });
+
+    ws.on('close', () => {
+        console.log(`Cliente desconectado: ${clientId}`);
+    });
 });
 
-app.get("/game/:gameId", (req, res) => {
-    const gameId = req.params.gameId;
-    const playerName = req.query.playerName;
-    res.render("game", { playerName, gameId });
-});
+function broadcastGameState(gameId) {
+    const gameState = gamesRooms.get(gameId);
+    const stateMessage = JSON.stringify({
+        type: 'gameState',
+        state: gameState.getState()
+    });
 
-app.get("/ranking", (req, res) => {
-    res.render("ranking");
-});
+    wss.clients.forEach((client) => {
+        const clientId = `${client._socket.remoteAddress}:${client._socket.remotePort}`;
+        if (client.readyState === WebSocket.OPEN && clientGameMap.get(clientId) === gameId) {
+            client.send(stateMessage);
+        }
+    });
+}
 
-app.post("/game", (req, res) => {
-    const playerName = req.body["player-name"];
-    if (!playerName || playerName.trim() === '') {
-        return res.status(400).send('Nome do jogador é obrigatório');
+function updateGames() {
+    for (const [gameId, gameState] of gamesRooms) {
+        gameState.update(TICK_RATE);
     }
-    const gameId = '123';
-    res.redirect(`/game/${gameId}?playerName=${encodeURIComponent(playerName)}`);
-});
+}
 
+function broadcastUpdates() {
+    for (const [gameId, gameState] of gamesRooms) {
+        broadcastGameState(gameId);
+    }
+}
+
+setInterval(updateGames, ServerConfig.TICK_RATE);
+setInterval(broadcastUpdates, ServerConfig.UPDATE_RATE);
+
+const PORT = process.env.PORT || 8088;
+server.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});

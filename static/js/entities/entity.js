@@ -1,6 +1,5 @@
 import { Vector2 } from "../utils/vector2.js";
 import { EntityState, EntityType, GameConfig } from "../core/constants.js";
-import { game, gameCanvas } from "../main.js";
 
 export class Entity {
     constructor(x, y, sprite, maxVelocity, damage, entityType, mass, rotation) {
