@@ -47,6 +47,11 @@ wss.on('connection', (ws, req) => {
 
     ws.on('close', () => {
         console.log(`Cliente desconectado: ${clientId}`);
+        if (clientGameMap.has(clientId)) {
+            const clientGameId = clientGameMap.get(clientId);
+            const clientGameState = gamesRooms.get(clientGameId);
+            clientGameState.removePlayer(clientId);
+        }
     });
 });
 

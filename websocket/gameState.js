@@ -21,6 +21,12 @@ class GameState {
         this.players.set(clientId, player);
     }
 
+    removePlayer(clientId) {
+        if (this.players.has(clientId)) {
+            this.players.delete(clientId);
+        }
+    }
+
     updatePlayers() {
 
     }
@@ -35,13 +41,15 @@ class GameState {
     }
 
     getState() {
+        const playersObj = Object.fromEntries(this.players);
+        const scoresObj = Object.fromEntries(this.scores);
         return ({
             gameId: this.gameId,
             gameWidth: this.gameWidth,
             gameHeight: this.gameHeight,
-            players: this.players,
+            players: playersObj,
             bullets: this.bullets,
-            scores: this.scores
+            scores: scoresObj
         });
     }
 }
