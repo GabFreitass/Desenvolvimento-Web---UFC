@@ -31,9 +31,26 @@ app.get("/ranking", (req, res) => {
 
 app.post("/game", (req, res) => {
     const playerName = req.body["player-name"];
-    if (!playerName || playerName.trim() === '') {
-        return res.status(400).send('Nome do jogador é obrigatório');
+    const playerCharacter = parseInt(req.body["player-character"]);
+
+    // Validação do nome do jogador
+    if (!playerName || typeof playerName !== 'string' || playerName.trim().length === 0) {
+        return res.status(400).send('Nome do jogador é obrigatório e deve ser uma string não vazia');
     }
+
+    // Validação do personagem do jogador
+    if (isNaN(playerCharacter) || playerCharacter < 0 || playerCharacter > 9) {
+        return res.status(400).send('Espaçonave inválida. Escolha um número entre 0 e 9');
+    }
+
+    // Geração de ID de jogo único
     const gameId = '123';
-    res.redirect(`/game/${gameId}?playerName=${encodeURIComponent(playerName)}`);
+
+    // Redirecionamento com parâmetros validados
+    res.redirect(`/game/${gameId}?playerName=${encodeURIComponent(playerName.trim())}&playerCharacter=${playerCharacter}`);
 });
+
+// Função auxiliar para gerar ID de jogo único
+function generateUniqueGameId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}

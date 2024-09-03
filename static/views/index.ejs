@@ -17,22 +17,47 @@
       <img class="game-logo" src="/assets/space-raiders.png" alt="Space Raiders" />
     </a>
     <form class="home-controls" action="/game" method="post">
-      <div class="enter-name-container">
+      <div class="form-container">
         <label class="game-font" for="player-name">ENTER YOUR NAME</label>
         <input id="player-name" type="text" name="player-name" required />
       </div>
-      <div class="start-button">
-        <span>
-          <img src="/assets/play-icon.svg" alt="Start" />
-          <button class="game-font btn-start" type="submit">START</button>
-        </span>
-      </div>
-      <div class="rank-button">
-        <img src="/assets/trophy-icon.svg" alt="Ranking" />
-        <a class="game-font btn-ranking" href="/ranking">RANKING</a>
+      <div class="buttons-container">
+        <div class="form-container">
+          <label class="game-font" for="player-character">CHOOSE YOUR SPACESHIP</label>
+          <div class="spaceship-carousel">
+            <button type="button" class="carousel-arrow left" onclick="changeSpaceship(-1)">&#9664;</button>
+            <img id="spaceship-image" src="/assets/spaceships/spaceship0.png" alt="Espaçonave">
+            <button type="button" class="carousel-arrow right" onclick="changeSpaceship(1)">&#9654;</button>
+          </div>
+          <input type="hidden" id="player-character" name="player-character" value="0">
+        </div>
+
+        <div class="start-button">
+          <span>
+            <img src="/assets/play-icon.svg" alt="Start" />
+            <button class="game-font btn-start" type="submit">START</button>
+          </span>
+        </div>
+        <div class="rank-button">
+          <img src="/assets/trophy-icon.svg" alt="Ranking" />
+          <a class="game-font btn-ranking" href="/ranking">RANKING</a>
+        </div>
       </div>
     </form>
   </div>
+  <script>
+    let currentSpaceship = 0;
+    const lastSpaceship = 9; // Ajuste este número para a quantidade total de espaçonaves
+
+    function changeSpaceship(direction) {
+      currentSpaceship += direction;
+      if (currentSpaceship > lastSpaceship) currentSpaceship = 0;
+      if (currentSpaceship < 0) currentSpaceship = lastSpaceship;
+
+      document.getElementById('spaceship-image').src = `/assets/spaceships/spaceship${currentSpaceship}.png`;
+      document.getElementById('player-character').value = currentSpaceship;
+    }
+  </script>
 </body>
 
 </html>
