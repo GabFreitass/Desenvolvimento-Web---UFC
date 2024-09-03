@@ -24,6 +24,11 @@ export class GameWebSocket {
                 console.log('Conexão WebSocket estabelecida');
                 this.isConnected = true;
                 this.startPing();
+                this.send('playerJoined', {
+                    gameId: this.game.gameId,
+                    playerName: this.game.playerName,
+                    playerCharacter: this.game.playerCharacter
+                })
             };
 
             this.socket.onmessage = (event) => {
@@ -89,28 +94,8 @@ export class GameWebSocket {
             this.latency = pongTime - data.time;
         });
 
-        this.on('playerJoined', (data) => {
-            console.log('Novo jogador entrou:', data.name);
-        });
-
-        this.on('syncPlayers', (data) => {
-            this.game.entities.players = data.players.map(player => this.game.respawnPlayer(
-                player.name,
-                player.position.x,
-                player.position.y,
-                player.playerId,
-                player.character,
-                player.rotation
-            ));
-            if (this.game.state === GameStates.READY) {
-                this.game.start();
-            }
-        });
-
-        this.on('syncBullets', (data) => {
-            this.game.entities.bullets = data.bullets.map(bullet => this.game.createBullet(
-                bullet.position.x, bullet.position.y, bullet.rotation, bullet.shooterId
-            ));
+        this.on('gameState', (data) => {
+            console.log('Recebido estado do jogo do servidor:', data);
         });
     }
 }

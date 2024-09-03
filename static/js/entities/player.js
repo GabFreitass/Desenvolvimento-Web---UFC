@@ -1,7 +1,6 @@
 
 import { Entity } from "./entity.js";
 import { GameConfig, EntityType } from "../core/constants.js";
-import { game } from "../main.js";
 
 export class Player extends Entity {
     constructor(name, x, y, sprite, playerId, character, rotation = 0) {
@@ -76,8 +75,6 @@ export class Player extends Entity {
     fire() {
         if (!this.canFire) return;
         this.stop();
-        const bullet = game.createBullet(this.position.x, this.position.y, this.rotation, this.playerId);
-        game.gameWebSocket.send('bulletJoined', { bullet });
         this.canFire = false;
     }
 }

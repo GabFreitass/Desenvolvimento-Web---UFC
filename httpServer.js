@@ -11,17 +11,10 @@ app.set("views", "static/views");
 app.use(express.urlencoded({ extended: true })); // middleware para pegar o nome do jogador com o body
 
 app.get("/", (req, res) => {
-    res.render("index");
+    res.render("home");
 });
 
 app.get("/game/:gameId", (req, res) => {
-    const gameId = req.params.gameId;
-    const viewerName = req.query.viewerName;
-
-    if (!viewerName) {
-        return res.status(400).send('Nome do espectador é obrigatório');
-    }
-
     res.render("game");
 });
 

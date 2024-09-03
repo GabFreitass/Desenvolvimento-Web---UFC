@@ -4,37 +4,25 @@ import { Sprite } from "./sprite.js";
 import { Player } from "../entities/player.js";
 import { Input } from "./input.js";
 import { Bullet } from "../entities/bullet.js";
-import { EntityState, EntityType, GameConfig, GameResources, GameStates, PlayerCharacters } from "./constants.js";
-import { playerName, scoreEl } from "../main.js";
+import { EntityState, EntityType, GameConfig, GameResources, GameStates } from "./constants.js";
 import { GameWebSocket } from "../online/gamewebsocket.js";
 
 export class Game {
-    constructor(canvas, gameId) {
-        this.gameId = gameId;
+    constructor(canvas, gameId, playerName, playerCharacter) {
         this.canvas = canvas;
+        this.gameId = gameId;
+        this.playerName = playerName;
+        this.playerCharacter = playerCharacter;
         this.state = GameStates.UNREADY;
-        this.playerId = null;
         this.gameInput = null;
         this.ctx = canvas.getContext("2d");
         this.lastFrameTime = 0;
         this.accumulatedTime = 0;
         this.timeStep = 1e3 / GameConfig.MAXFPS;
         this.rafId = null;
-        this.score = 0;
-        this.entities = {
-            players: [],
-            bullets: []
-        };
+        this.gameState = null; // vem do servidor ws
         this.gameWebSocket = new GameWebSocket(this);
         this.mainloop = this.mainloop.bind(this);
-    }
-
-    get player() {
-        return this.entities.players.find(player => player.playerId === this.playerId);
-    }
-
-    get allEntities() {
-        return [...this.entities.players, ...this.entities.bullets];
     }
 
     async load() {
@@ -42,91 +30,60 @@ export class Game {
         this.gameWebSocket.connect();
 
         // load resources
-        GameResources.spaceship = new Resource("/assets/ships_0.png");
-        GameResources.bullets = new Resource("/assets/bullets.png");
-        const loadResources = Object.values(GameResources).map((resource) =>
-            resource.load()
-        );
+        for (let i = 0; i < 10; i++) {
+            GameResources.spaceships.push(new Resource(`/assets/spaceships/spaceship${i}.png`));
+        }
+        GameResources.bullet = new Resource("/assets/bullet.png");
+        const loadResources = [
+            ...GameResources.spaceships.map(resource => resource.load()),
+            GameResources.bullet.load()
+        ];
         await Promise.all(loadResources);
 
-        // load entities
-        const player = this.respawnPlayer(playerName,
-            Math.random() * this.canvas.width,
-            Math.random() * this.canvas.height,
-            uuidv4(),
-            PlayerCharacters.Spacheship0
-        );
-        this.playerId = player.playerId;
-
-        this.gameWebSocket.send('playerJoined', { player });
         // load game inputs
         this.gameInput = new Input(this.canvas);
 
         this.state = GameStates.READY;
     }
 
-    respawnPlayer(name, x, y, playerId, character, rotation) {
-        const playerSprite = new Sprite(
-            GameResources.spaceship,
-            1, // frame columns
-            10, // frame rows
-            180, // sprite width
-            180, // sprite height
-        );
-        const player = new Player(
-            name,
-            x,
-            y,
-            playerSprite,
-            playerId,
-            character,
-            rotation
-        );
-        return player;
-    }
+    // createBullet(x, y, rotation, shooterId) {
+    //     const bulletSprite = new Sprite(
+    //         GameResources.bullets,
+    //         3,
+    //         2,
+    //         20,
+    //         80,
+    //         false,
+    //         1,
+    //         1000, null, 40,
+    //         80, 110, 41
+    //     );
+    //     const bullet = new Bullet(x, y, bulletSprite, rotation, shooterId);
+    //     return bullet;
+    // }
 
-    gainScore(points) {
-        this.score += points;
-    }
+    handleInputs() {
+        // const inputs = this.gameInput.inputKeys;
+        // this.updatePlayerRotation(this.gameInput.cursorPosition, player);
+        // player.acceleration.setZero();
+        // const accelerationFactor = player.mass * 1e-2;
 
-    createBullet(x, y, rotation, shooterId) {
-        const bulletSprite = new Sprite(
-            GameResources.bullets,
-            3,
-            2,
-            20,
-            80,
-            false,
-            1,
-            1000, null, 40,
-            80, 110, 41
-        );
-        const bullet = new Bullet(x, y, bulletSprite, rotation, shooterId);
-        return bullet;
-    }
-
-    handleInputs(gameInput, player) {
-        const inputs = gameInput.inputKeys;
-        this.updatePlayerRotation(gameInput.cursorPosition, player);
-        player.acceleration.setZero();
-        const accelerationFactor = player.mass * 1e-2;
-
-        if (inputs.includes(GameConfig.controls.FIRE)) {
-            player.fire();
-            return;
-        }
-        if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
-            player.acceleration.x -= accelerationFactor;
-        }
-        if (inputs.includes(GameConfig.controls.MOVE_RIGHT)) {
-            player.acceleration.x += accelerationFactor;
-        }
-        if (inputs.includes(GameConfig.controls.MOVE_UP)) {
-            player.acceleration.y -= accelerationFactor;
-        }
-        if (inputs.includes(GameConfig.controls.MOVE_DOWN)) {
-            player.acceleration.y += accelerationFactor;
-        }
+        // if (inputs.includes(GameConfig.controls.FIRE)) {
+        //     player.fire();
+        //     return;
+        // }
+        // if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
+        //     player.acceleration.x -= accelerationFactor;
+        // }
+        // if (inputs.includes(GameConfig.controls.MOVE_RIGHT)) {
+        //     player.acceleration.x += accelerationFactor;
+        // }
+        // if (inputs.includes(GameConfig.controls.MOVE_UP)) {
+        //     player.acceleration.y -= accelerationFactor;
+        // }
+        // if (inputs.includes(GameConfig.controls.MOVE_DOWN)) {
+        //     player.acceleration.y += accelerationFactor;
+        // }
     }
 
     updatePlayerRotation(cursorPosition, player) {
@@ -150,19 +107,7 @@ export class Game {
     }
 
     update(deltaTime) {
-        scoreEl.textContent = this.score;
-        this.handleInputs(this.gameInput, this.player);
-        this.entities.players = this.entities.players.filter(player => {
-            player.update(deltaTime, this.allEntities);
-            return player.state !== EntityState.DEAD;
-        });
-
-        this.entities.bullets = this.entities.bullets.filter(bullet => {
-            bullet.update(deltaTime, this.allEntities);
-            return bullet.state !== EntityState.DEAD;
-        });
-        this.gameWebSocket.send('playerUpdate', { player: this.player });
-        this.gameWebSocket.send('bulletsUpdate', { bullets: this.entities.bullets });
+        this.handleInputs();
     }
 
     drawLatency() {
@@ -191,8 +136,6 @@ export class Game {
     draw(alpha) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.drawLatency();
-        this.entities.players.forEach(player => player.draw(this.ctx, alpha));
-        this.entities.bullets.forEach(bullet => bullet.draw(this.ctx, alpha));
     }
 
     mainloop(timestamp) {

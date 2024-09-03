@@ -12,13 +12,6 @@ export const EntityState = {
     DEAD: "DEAD"
 };
 
-export const PlayerCharacters = {
-    Spacheship0: 0,
-    Spacheship1: 1,
-    Spacheship2: 2,
-    Spacheship3: 3,
-}
-
 export const EntityType = {
     PLAYER: "PLAYER",
     BULLET: "BULLET",
@@ -59,6 +52,6 @@ export const GameConfig = {
 };
 
 export const GameResources = {
-    spaceship: null,
-    bullets: null,
+    spaceships: [],
+    bullet: null,
 };

@@ -54,7 +54,8 @@ function broadcastGameState(gameId) {
     const gameState = gamesRooms.get(gameId);
     const stateMessage = JSON.stringify({
         type: 'gameState',
-        state: gameState.getState()
+        state: gameState.getState(),
+        timestamp: Date.now()
     });
 
     wss.clients.forEach((client) => {
@@ -67,7 +68,7 @@ function broadcastGameState(gameId) {
 
 function updateGames() {
     for (const [gameId, gameState] of gamesRooms) {
-        gameState.update(TICK_RATE);
+        gameState.update(ServerConfig.TICK_RATE);
     }
 }
 
