@@ -4,7 +4,8 @@ import { GameConfig, EntityType } from "../core/constants.js";
 
 export class Player extends Entity {
     constructor(name, x, y, sprite, character, rotation) {
-        super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass, rotation);
+        const playerSprite = new Sprite(GameResources.spaceships[character], 1, 1, 180, 180);
+        super(x, y, playerSprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass, rotation);
         this.name = name;
         this.fireRate = 0.5;
         this.sprite.frameIndex = character;
