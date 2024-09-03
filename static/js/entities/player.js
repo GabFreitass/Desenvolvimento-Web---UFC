@@ -1,6 +1,7 @@
 
 import { Entity } from "./entity.js";
-import { GameConfig, EntityType } from "../core/constants.js";
+import { GameConfig, EntityType, GameResources } from "../core/constants.js";
+import { Sprite } from "../core/sprite.js";
 
 export class Player extends Entity {
     constructor(name, x, y, sprite, character, rotation) {
