@@ -3,6 +3,7 @@ import { GameStates } from "../core/constants.js";
 export class GameWebSocket {
     constructor(game) {
         this.game = game;
+        this.clientId = null;
         this.latency = 0;
         this.socket = null;
         this.isConnected = false;
@@ -94,8 +95,17 @@ export class GameWebSocket {
             this.latency = pongTime - data.time;
         });
 
+        this.on('clientId', (data) => {
+            this.clientId = data.clientId;
+        })
+
         this.on('gameState', (data) => {
-            console.log('Recebido estado do jogo do servidor:', data);
+            const state = data.state;
+            this.game.players.clear();
+            for (let clientId in state.players) {
+                const player = state.players[clientId];
+                this.game.players.set(clientId, this.game.createPlayer(player.name, player.x, player.y, player.character));
+            }
         });
     }
 }

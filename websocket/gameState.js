@@ -12,7 +12,6 @@ class GameState {
 
     createPlayer(clientId, playerName, playerCharacter) {
         const player = {
-            id: clientId,
             name: playerName,
             x: Math.random() * this.gameWidth,
             y: Math.random() * this.gameHeight,
@@ -22,6 +21,7 @@ class GameState {
     }
 
     removePlayer(clientId) {
+        console.log('removendo o cliente: ' + clientId);
         if (this.players.has(clientId)) {
             this.players.delete(clientId);
         }

@@ -20,9 +20,10 @@ export class Game {
         this.accumulatedTime = 0;
         this.timeStep = 1e3 / GameConfig.MAXFPS;
         this.rafId = null;
-        this.gameState = null; // vem do servidor ws
         this.gameWebSocket = new GameWebSocket(this);
         this.mainloop = this.mainloop.bind(this);
+        this.players = new Map();
+        this.bullets = [];
     }
 
     async load() {
@@ -44,6 +45,12 @@ export class Game {
         this.gameInput = new Input(this.canvas);
 
         this.state = GameStates.READY;
+    }
+
+    createPlayer(playerName, x, y, character, rotation = 0) {
+        const playerSprite = new Sprite(GameResources.spaceships[character], 1, 1, 180, 180);
+        const player = new Player(playerName, x, y, playerSprite, character, rotation);
+        return player;
     }
 
     // createBullet(x, y, rotation, shooterId) {
@@ -135,6 +142,9 @@ export class Game {
 
     draw(alpha) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (const player of this.players.values()) {
+            player.draw(this.ctx, alpha);
+        }
         this.drawLatency();
     }
 

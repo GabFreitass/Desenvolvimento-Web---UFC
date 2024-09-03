@@ -35,6 +35,8 @@ wss.on('connection', (ws, req) => {
                     const gameState = gamesRooms.get(gameId);
                     gameState.createPlayer(clientId, playerName, playerCharacter);
                     clientGameMap.set(clientId, gameId);
+                    const clientIdMessage = JSON.stringify({ type: 'clientId', clientId: clientId });
+                    ws.send(clientIdMessage);
                     break;
 
                 default:

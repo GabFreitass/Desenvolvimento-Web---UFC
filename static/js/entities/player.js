@@ -3,13 +3,14 @@ import { Entity } from "./entity.js";
 import { GameConfig, EntityType } from "../core/constants.js";
 
 export class Player extends Entity {
-    constructor(name, x, y, sprite, character, rotation = 0) {
+    constructor(name, x, y, sprite, character, rotation) {
         super(x, y, sprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass, rotation);
         this.name = name;
         this.fireRate = 0.5;
         this.sprite.frameIndex = character;
         this.character = character;
         this.canFire = true;
+        this.rotation = rotation;
         this.accumulatedTime = 0;
         this.maxHealth = 1000;
         this.health = this.maxHealth;
