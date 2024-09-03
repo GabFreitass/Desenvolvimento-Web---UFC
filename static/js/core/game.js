@@ -26,6 +26,10 @@ export class Game {
         this.bullets = [];
     }
 
+    get player() {
+        return this.players.get(this.gameWebSocket.clientId);
+    }
+
     async load() {
         this.state = GameStates.LOADING;
         this.gameWebSocket.connect();
@@ -70,8 +74,8 @@ export class Game {
     // }
 
     handleInputs() {
+        this.updatePlayerRotation();
         // const inputs = this.gameInput.inputKeys;
-        // this.updatePlayerRotation(this.gameInput.cursorPosition, player);
         // player.acceleration.setZero();
         // const accelerationFactor = player.mass * 1e-2;
 
@@ -93,10 +97,22 @@ export class Game {
         // }
     }
 
-    updatePlayerRotation(cursorPosition, player) {
+    updatePlayerRotation() {
+        const cursorPosition = this.gameInput.cursorPosition;
+        const player = this.player;
         const dx = cursorPosition.x - player.position.x;
         const dy = cursorPosition.y - player.position.y;
         player.rotation = Math.atan2(dy, dx) + Math.PI / 2;
+        this.gameWebSocket.send('playerUpdate', {
+            gameId: this.gameId,
+            newPlayer: {
+                name: player.name,
+                x: player.position.x,
+                y: player.position.y,
+                character: player.character,
+                rotation: player.rotation
+            }
+        })
     }
 
     start() {
@@ -115,6 +131,9 @@ export class Game {
 
     update(deltaTime) {
         this.handleInputs();
+        for (const player of this.players.values()) {
+            player.update(deltaTime);
+        }
     }
 
     drawLatency() {

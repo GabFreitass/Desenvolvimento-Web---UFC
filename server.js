@@ -20,12 +20,13 @@ wss.on('connection', (ws, req) => {
             const data = JSON.parse(message);
 
             switch (data.type) {
-                case 'ping':
+                case 'ping': {
                     const pongMessage = JSON.stringify({ type: 'pong', time: data.time });
                     ws.send(pongMessage);
                     break;
+                }
 
-                case 'playerJoined':
+                case 'playerJoined': {
                     const { gameId, playerName, playerCharacter } = data;
                     // se a sala do jogo ainda não havia sido criada, cria ela
                     if (!gamesRooms.has(gameId)) {
@@ -38,7 +39,14 @@ wss.on('connection', (ws, req) => {
                     const clientIdMessage = JSON.stringify({ type: 'clientId', clientId: clientId });
                     ws.send(clientIdMessage);
                     break;
-
+                }
+                case 'playerUpdate': {
+                    const { gameId, newPlayer } = data;
+                    console.log('playerupdate: ' + newPlayer)
+                    const gameState = gamesRooms.get(gameId);
+                    gameState.updatePlayer(clientId, newPlayer);
+                    break;
+                }
                 default:
                     console.log(`Mensagem não reconhecida: ${data.type}`);
             }

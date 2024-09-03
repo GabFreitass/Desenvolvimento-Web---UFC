@@ -31,34 +31,34 @@ export class Entity {
         this.velocity.setZero();
     }
 
-    update(deltaTime, entities) {
+    update(deltaTime) {
         this.sprite.update(deltaTime, this.rotation);
-        if (this.state === EntityState.DEAD) return;
+        // if (this.state === EntityState.DEAD) return;
 
-        this.velocity = this.velocity.add(this.acceleration);
+        // this.velocity = this.velocity.add(this.acceleration);
 
-        if (this.state === EntityState.IDLE) return;
+        // if (this.state === EntityState.IDLE) return;
 
-        // apply friction
-        this.velocity = this.velocity.scale(1 - (GameConfig.gameParameters.frictionFactor * this.mass));
+        // // apply friction
+        // this.velocity = this.velocity.scale(1 - (GameConfig.gameParameters.frictionFactor * this.mass));
 
-        // Limita a velocidade ao máximo
-        if (this.velocity.magnitude > this.maxVelocity) {
-            this.velocity = this.velocity.normalize();
-            this.velocity = this.velocity.scale(this.maxVelocity);
-        }
+        // // Limita a velocidade ao máximo
+        // if (this.velocity.magnitude > this.maxVelocity) {
+        //     this.velocity = this.velocity.normalize();
+        //     this.velocity = this.velocity.scale(this.maxVelocity);
+        // }
 
-        if (this.velocity.magnitude < 0.1) {
-            this.stop();
-        }
+        // if (this.velocity.magnitude < 0.1) {
+        //     this.stop();
+        // }
 
-        const newPosition = new Vector2(
-            this.position.x + this.velocity.x * deltaTime,
-            this.position.y + this.velocity.y * deltaTime
-        );
+        // const newPosition = new Vector2(
+        //     this.position.x + this.velocity.x * deltaTime,
+        //     this.position.y + this.velocity.y * deltaTime
+        // );
 
-        this.handleCollisions(newPosition, entities);
-        this.updatePosition(newPosition);
+        // this.handleCollisions(newPosition, entities);
+        // this.updatePosition(newPosition);
     }
 
     updatePosition(newPosition) {

@@ -23,8 +23,8 @@ export class Player extends Entity {
         }
     }
 
-    update(deltaTime, entities) {
-        super.update(deltaTime, entities);
+    update(deltaTime) {
+        super.update(deltaTime);
         this.accumulatedTime += deltaTime;
         if (this.accumulatedTime >= 1e3 / this.fireRate) {
             this.canFire = true;

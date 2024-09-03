@@ -15,15 +15,21 @@ class GameState {
             name: playerName,
             x: Math.random() * this.gameWidth,
             y: Math.random() * this.gameHeight,
-            character: playerCharacter
+            character: playerCharacter,
+            rotation: 0
         }
         this.players.set(clientId, player);
     }
 
     removePlayer(clientId) {
-        console.log('removendo o cliente: ' + clientId);
         if (this.players.has(clientId)) {
             this.players.delete(clientId);
+        }
+    }
+
+    updatePlayer(clientId, newPlayer) {
+        if (this.players.has(clientId)) {
+            this.players.set(clientId, newPlayer);
         }
     }
 
