@@ -42,7 +42,6 @@ wss.on('connection', (ws, req) => {
                 }
                 case 'playerUpdate': {
                     const { gameId, newPlayer } = data;
-                    console.log('playerupdate: ' + newPlayer)
                     const gameState = gamesRooms.get(gameId);
                     gameState.updatePlayer(clientId, newPlayer);
                     break;
