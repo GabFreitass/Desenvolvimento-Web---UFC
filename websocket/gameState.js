@@ -1,11 +1,11 @@
-const { GameConfig } = require("./config.js");
+const { GameServerConfig } = require("./config.js");
 const { Player } = require("./player.js");
 
 class GameState {
     constructor(gameId) {
         this.gameId = gameId;
-        this.gameWidth = GameConfig.gameWidth;
-        this.gameHeight = GameConfig.gameHeight;
+        this.gameWidth = GameServerConfig.gameWidth;
+        this.gameHeight = GameServerConfig.gameHeight;
         this.players = new Map(); // associa cada cliente a um player
         this.bullets = [];
         this.scores = new Map(); // associa cada cliente a sua pontuação
@@ -70,4 +70,4 @@ class GameState {
     }
 }
 
-module.exports = GameState;
+module.exports = { GameState };

@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const { server } = require('./httpServer.js');
-const GameState = require('./websocket/gameState.js');
+const { GameState } = require('./websocket/gameState.js');
 const { ServerConfig } = require('./websocket/config.js');
 
 const wss = new WebSocket.Server({ server });

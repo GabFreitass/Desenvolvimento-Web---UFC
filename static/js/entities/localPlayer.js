@@ -1,5 +1,5 @@
 
-import { Entity } from "./entity.js";
+import { Entity } from "./localEntity.js";
 import { GameResources } from "../core/constants.js";
 import { Sprite } from "../core/sprite.js";
 

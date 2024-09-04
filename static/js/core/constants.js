@@ -6,23 +6,9 @@ export const GameStates = {
     PAUSED: "PAUSED",
 };
 
-export const EntityState = {
-    MOVING: "MOVING",
-    IDLE: "IDLE",
-    DEAD: "DEAD"
-};
-
-export const EntityType = {
-    PLAYER: "PLAYER",
-    BULLET: "BULLET",
-};
-
 export const GameConfig = {
     MAXFPS: 60,
-    MAXUPDATES: 5,
-    ENTITY_COLLISION_RADIUS: 1,
     SHOW_COLLISION_CIRCLES: true,
-    RESPAWN_ON_DEATH: true,
 
     controls: {// controls
         MOVE_LEFT: "KeyA",

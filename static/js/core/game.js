@@ -1,10 +1,7 @@
-import { v4 as uuidv4 } from 'https://esm.sh/uuid';
-import { Resource } from "./resource.js"
-import { Sprite } from "./sprite.js";
-import { Player } from "../entities/player.js";
+import { Resource } from "./resource.js";
+import { Player } from "../entities/localPlayer.js";
 import { Input } from "./input.js";
-import { Bullet } from "../entities/bullet.js";
-import { EntityState, EntityType, GameConfig, GameResources, GameStates } from "./constants.js";
+import { GameConfig, GameResources, GameStates } from "./constants.js";
 import { GameWebSocket } from "../online/gamewebsocket.js";
 
 export class Game {

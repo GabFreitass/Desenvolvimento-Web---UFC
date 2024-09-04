@@ -1,4 +1,4 @@
-const { GameConfig } = require('./config.js');
+const { GameServerConfig } = require('./config.js');
 const { Vector2 } = require('./vector2.js');
 
 class Player {
@@ -10,14 +10,14 @@ class Player {
         this.fireRate = 0.5;
         this.canFire = true;
         this.accumulatedTime = 0;
-        this.maxHealth = GameConfig.playerMaxHealth;
+        this.maxHealth = GameServerConfig.playerMaxHealth;
         this.health = this.maxHealth;
-        this.maxVelocity = GameConfig.playerMaxVelocity;
+        this.maxVelocity = GameServerConfig.playerMaxVelocity;
         this.acceleration = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
-        this.mass = GameConfig.playerMass;
+        this.mass = GameServerConfig.playerMass;
         this.isAlive = true;
-        this.collisionRadius = GameConfig.playerCollisionRadius;
+        this.collisionRadius = GameServerConfig.playerCollisionRadius;
     }
 
     stop() {
@@ -40,7 +40,7 @@ class Player {
         }
 
         this.velocity = this.velocity.add(this.acceleration);
-        this.velocity = this.velocity.scale(1 - (GameConfig.frictionFactor * this.mass));
+        this.velocity = this.velocity.scale(1 - (GameServerConfig.frictionFactor * this.mass));
 
         // limita a velocidade
         if (this.velocity.magnitude > this.maxVelocity) {
@@ -83,7 +83,7 @@ class Player {
 
         if (velocityAlongNormal > 0) return; // já estão se afastando
 
-        const restitution = GameConfig.collisionRestitution;
+        const restitution = GameServerConfig.collisionRestitution;
         const impulseScalar = -(1 + restitution) * velocityAlongNormal;
         const impulse = normal.scale(impulseScalar / (1 / this.mass + 1 / otherPlayer.mass));
 

@@ -1,5 +1,3 @@
-import { GameStates } from "../core/constants.js";
-
 export class GameWebSocket {
     constructor(game) {
         this.game = game;

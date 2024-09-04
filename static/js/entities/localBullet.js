@@ -1,5 +1,5 @@
 import { EntityState, EntityType, GameConfig } from "../core/constants.js";
-import { Entity } from "./entity.js";
+import { Entity } from "./localEntity.js";
 
 export class Bullet extends Entity {
     constructor(x, y, sprite, rotation, shooterId) {

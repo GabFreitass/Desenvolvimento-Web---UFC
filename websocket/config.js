@@ -3,10 +3,11 @@ const ServerConfig = {
     UPDATE_RATE: 1e3 / 60 //  atualizações enviadas aos clientes por segundo
 }
 
-const GameConfig = {
+const GameServerConfig = {
     gameWidth: 1000,
     gameHeight: 1000,
 
+    // enviroment physics
     frictionFactor: 1e-4,
     collisionRestitution: 0.5,
 
@@ -26,4 +27,4 @@ const GameConfig = {
     bulletDamage: 30
 }
 
-module.exports = { ServerConfig, GameConfig };
+module.exports = { ServerConfig, GameServerConfig };
