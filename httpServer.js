@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const uuid = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
@@ -37,13 +38,9 @@ app.post("/game", (req, res) => {
     }
 
     // Geração de ID de jogo único
-    const gameId = '123';
+    const gameId = uuid.v4();
 
     // Redirecionamento com parâmetros validados
     res.redirect(`/game/${gameId}?playerName=${encodeURIComponent(playerName.trim())}&playerCharacter=${playerCharacter}`);
 });
 
-// Função auxiliar para gerar ID de jogo único
-function generateUniqueGameId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-}
