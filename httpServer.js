@@ -53,3 +53,8 @@ function validateGameParameters(req, res, next) {
 
     next();
 }
+
+// Redireciona para "/" quando a rota não for identificada
+app.use((req, res) => {
+    res.redirect("/");
+});

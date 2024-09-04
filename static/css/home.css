@@ -34,7 +34,7 @@ a {
   max-width: 550px;
   margin: auto;
   margin-top: 5vh;
-  margin-bottom: 100px;
+  margin-bottom: 50px;
   animation: pulse 2s infinite ease-in-out;
 }
 
@@ -160,7 +160,7 @@ a {
 }
 
 .rank-button {
-  margin-top: 2rem;
+  margin-top: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
