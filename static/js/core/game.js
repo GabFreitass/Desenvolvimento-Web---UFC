@@ -51,9 +51,8 @@ export class Game {
         this.state = GameStates.READY;
     }
 
-    createPlayer(playerName, x, y, character, rotation = 0) {
-        const playerSprite = new Sprite(GameResources.spaceships[character], 1, 1, 180, 180);
-        const player = new Player(playerName, x, y, playerSprite, character, rotation);
+    createPlayer(playerName, x, y, character, rotation, velocity, mass, health, maxHealth, collisionRadius) {
+        const player = new Player(playerName, x, y, character, rotation, velocity, mass, health, maxHealth, collisionRadius);
         return player;
     }
 
@@ -74,43 +73,48 @@ export class Game {
     // }
 
     handleInputs() {
+        if (!this.player) return;
         this.updatePlayerRotation();
-        // const inputs = this.gameInput.inputKeys;
-        // player.acceleration.setZero();
-        // const accelerationFactor = player.mass * 1e-2;
+        const inputs = this.gameInput.inputKeys;
+        this.player.acceleration.setZero();
+        const accelerationFactor = this.player.mass * 1e-2;
 
-        // if (inputs.includes(GameConfig.controls.FIRE)) {
-        //     player.fire();
-        //     return;
-        // }
-        // if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
-        //     player.acceleration.x -= accelerationFactor;
-        // }
-        // if (inputs.includes(GameConfig.controls.MOVE_RIGHT)) {
-        //     player.acceleration.x += accelerationFactor;
-        // }
-        // if (inputs.includes(GameConfig.controls.MOVE_UP)) {
-        //     player.acceleration.y -= accelerationFactor;
-        // }
-        // if (inputs.includes(GameConfig.controls.MOVE_DOWN)) {
-        //     player.acceleration.y += accelerationFactor;
-        // }
+        if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
+            this.player.acceleration.x -= accelerationFactor;
+        }
+        if (inputs.includes(GameConfig.controls.MOVE_RIGHT)) {
+            this.player.acceleration.x += accelerationFactor;
+        }
+        if (inputs.includes(GameConfig.controls.MOVE_UP)) {
+            this.player.acceleration.y -= accelerationFactor;
+        }
+        if (inputs.includes(GameConfig.controls.MOVE_DOWN)) {
+            this.player.acceleration.y += accelerationFactor;
+        }
+
+        // if any movement input
+        if (!this.player.acceleration.isZero) {
+            this.gameWebSocket.send('playerUpdate', {
+                gameId: this.gameId,
+                newPlayer: {
+                    rotation: this.player.rotation,
+                    acceleration: this.player.acceleration
+                }
+            });
+        }
+
     }
 
     updatePlayerRotation() {
         const cursorPosition = this.gameInput.cursorPosition;
-        const player = this.player;
-        const dx = cursorPosition.x - player.position.x;
-        const dy = cursorPosition.y - player.position.y;
-        player.rotation = Math.atan2(dy, dx) + Math.PI / 2;
+        const dx = cursorPosition.x - this.player.position.x;
+        const dy = cursorPosition.y - this.player.position.y;
+        this.player.updateRotation(Math.atan2(dy, dx) + Math.PI / 2);
         this.gameWebSocket.send('playerUpdate', {
             gameId: this.gameId,
             newPlayer: {
-                name: player.name,
-                x: player.position.x,
-                y: player.position.y,
-                character: player.character,
-                rotation: player.rotation
+                rotation: this.player.rotation,
+                acceleration: this.player.acceleration
             }
         })
     }
@@ -126,13 +130,6 @@ export class Game {
         if (this.state == GameStates.RUNNING) {
             cancelAnimationFrame(this.rafId);
             this.state = GameStates.PAUSED;
-        }
-    }
-
-    update(deltaTime) {
-        this.handleInputs();
-        for (const player of this.players.values()) {
-            player.update(deltaTime);
         }
     }
 
@@ -174,7 +171,7 @@ export class Game {
         this.lastFrameTime = timestamp;
 
         while (this.accumulatedTime >= this.timeStep) {
-            this.update(this.timeStep);
+            this.handleInputs();
             this.accumulatedTime -= this.timeStep;
         }
 

@@ -104,7 +104,18 @@ export class GameWebSocket {
             this.game.players.clear();
             for (let clientId in state.players) {
                 const player = state.players[clientId];
-                this.game.players.set(clientId, this.game.createPlayer(player.name, player.x, player.y, player.character, player.rotation));
+                this.game.players.set(clientId, this.game.createPlayer(
+                    player.name,
+                    player.position.x,
+                    player.position.y,
+                    player.character,
+                    player.rotation,
+                    player.velocity,
+                    player.mass,
+                    player.health,
+                    player.maxHealth,
+                    player.collisionRadius
+                ));
             }
         });
     }

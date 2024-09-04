@@ -1,37 +1,17 @@
 
 import { Entity } from "./entity.js";
-import { GameConfig, EntityType, GameResources } from "../core/constants.js";
+import { GameResources } from "../core/constants.js";
 import { Sprite } from "../core/sprite.js";
 
 export class Player extends Entity {
-    constructor(name, x, y, sprite, character, rotation) {
+    constructor(name, x, y, character, rotation, velocity, mass, health, maxHealth, collisionRadius) {
         const playerSprite = new Sprite(GameResources.spaceships[character], 1, 1, 180, 180);
-        super(x, y, playerSprite, GameConfig.gameParameters.maxPlayerSpeed, GameConfig.gameParameters.playerCollisionDamage, EntityType.PLAYER, GameConfig.gameParameters.playerMass, rotation);
+        super(x, y, playerSprite, rotation, velocity, mass, collisionRadius);
         this.name = name;
-        this.fireRate = 0.5;
-        this.sprite.frameIndex = character;
         this.character = character;
-        this.canFire = true;
-        this.rotation = rotation;
-        this.accumulatedTime = 0;
-        this.maxHealth = 1000;
-        this.health = this.maxHealth;
-    }
-
-    takeDamage(damage) {
-        this.health = Math.max(this.health - damage, 0);
-        if (this.health === 0) {
-            this.isAlive = false;
-        }
-    }
-
-    update(deltaTime) {
-        super.update(deltaTime);
-        this.accumulatedTime += deltaTime;
-        if (this.accumulatedTime >= 1e3 / this.fireRate) {
-            this.canFire = true;
-            this.accumulatedTime = 0;
-        }
+        this.health = health;
+        this.maxHealth = maxHealth;
+        this.collisionRadius = collisionRadius;
     }
 
     drawName(ctx) {
@@ -70,13 +50,7 @@ export class Player extends Entity {
 
     draw(ctx, alpha) {
         super.draw(ctx, alpha);
-        this.drawHealth(ctx); // Chamando o novo método para desenhar a barra de vida
+        this.drawHealth(ctx);
         this.drawName(ctx);
-    }
-
-    fire() {
-        if (!this.canFire) return;
-        this.stop();
-        this.canFire = false;
     }
 }

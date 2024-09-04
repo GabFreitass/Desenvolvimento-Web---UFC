@@ -1,4 +1,5 @@
 const { GameConfig } = require("./config.js");
+const { Player } = require("./player.js");
 
 class GameState {
     constructor(gameId) {
@@ -11,13 +12,12 @@ class GameState {
     }
 
     createPlayer(clientId, playerName, playerCharacter) {
-        const player = {
-            name: playerName,
-            x: Math.random() * this.gameWidth,
-            y: Math.random() * this.gameHeight,
-            character: playerCharacter,
-            rotation: 0
-        }
+        const player = new Player(
+            playerName,
+            Math.random() * this.gameWidth,
+            Math.random() * this.gameHeight,
+            parseInt(playerCharacter)
+        );
         this.players.set(clientId, player);
     }
 
@@ -29,21 +29,31 @@ class GameState {
 
     updatePlayer(clientId, newPlayer) {
         if (this.players.has(clientId)) {
-            this.players.set(clientId, newPlayer);
+            const player = this.players.get(clientId);
+            this.updatePlayerAttributes(player, newPlayer);
         }
     }
 
-    updatePlayers() {
+    // o jogador só pode mudar a rotação (com o mouse) e sua aceleração (com o teclado)
+    updatePlayerAttributes(player, newAttributes) {
+        player.rotation = newAttributes.rotation;
+        player.acceleration.x = newAttributes.acceleration.x;
+        player.acceleration.y = newAttributes.acceleration.y;
+    }
+
+    updatePlayers(deltaTime) {
+        for (const [clientId, player] of this.players) {
+            player.update(deltaTime, this.players.values());
+        }
+    }
+
+    updateBullets(deltaTime) {
 
     }
 
-    updateBullets() {
-
-    }
-
-    update() {
-        this.updatePlayers();
-        this.updateBullets();
+    update(deltaTime) {
+        this.updatePlayers(deltaTime);
+        this.updateBullets(deltaTime);
     }
 
     getState() {

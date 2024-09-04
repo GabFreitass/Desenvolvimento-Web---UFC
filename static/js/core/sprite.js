@@ -90,22 +90,12 @@ export class Sprite {
             this.height
         );
 
-        if (GameConfig.SHOW_COLLISION_CIRCLES) {
-            // Desenha um círculo em torno da posição do sprite
-            ctx.beginPath();
-            ctx.arc(0, 0, this.collisionRadius, 0, 2 * Math.PI);
-            ctx.strokeStyle = 'red'; // Cor do círculo
-            ctx.lineWidth = 2; // Espessura da linha
-            ctx.stroke();
-        }
-
         // Restaura o estado anterior do contexto
         ctx.restore();
     }
 
     // Método para avançar para o próximo frame
-    update(dt, rotation) {
-        this.rotation = rotation;
+    update(dt) {
         if (!this.animatedSprite) return;
         this.accumulatedTime += dt;
         if (this.accumulatedTime >= this.animationDelay) {
