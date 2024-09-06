@@ -2,12 +2,11 @@ import { GameConfig } from "../core/constants.js";
 import { Vector2 } from "../utils/vector2.js";
 
 export class Entity {
-    constructor(x, y, sprite, rotation, velocity, mass, collisionRadius) {
+    constructor(x, y, sprite, rotation, velocity, collisionRadius) {
         this.position = new Vector2(x, y);
         this.sprite = sprite;
         this.updateRotation(rotation);
         this.velocity = velocity;
-        this.mass = mass;
         this.acceleration = new Vector2(0, 0);
         this.collisionRadius = collisionRadius;
     }

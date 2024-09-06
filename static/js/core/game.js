@@ -3,6 +3,7 @@ import { Player } from "../entities/localPlayer.js";
 import { Input } from "./input.js";
 import { GameConfig, GameResources, GameStates } from "./constants.js";
 import { GameWebSocket } from "../online/gamewebsocket.js";
+import { Bullet } from "../entities/localBullet.js";
 
 export class Game {
     constructor(canvas, gameId, playerName, playerCharacter) {
@@ -21,6 +22,10 @@ export class Game {
         this.mainloop = this.mainloop.bind(this);
         this.players = new Map();
         this.bullets = [];
+    }
+
+    get entities() {
+        return [...this.players.values(), ...this.bullets];
     }
 
     get player() {
@@ -48,33 +53,30 @@ export class Game {
         this.state = GameStates.READY;
     }
 
-    createPlayer(playerName, x, y, character, rotation, velocity, mass, health, maxHealth, collisionRadius) {
-        const player = new Player(playerName, x, y, character, rotation, velocity, mass, health, maxHealth, collisionRadius);
+    createPlayer(playerName, x, y, character, rotation, velocity, health, maxHealth, collisionRadius) {
+        const player = new Player(playerName, x, y, character, rotation, velocity, health, maxHealth, collisionRadius);
         return player;
     }
 
-    // createBullet(x, y, rotation, shooterId) {
-    //     const bulletSprite = new Sprite(
-    //         GameResources.bullets,
-    //         3,
-    //         2,
-    //         20,
-    //         80,
-    //         false,
-    //         1,
-    //         1000, null, 40,
-    //         80, 110, 41
-    //     );
-    //     const bullet = new Bullet(x, y, bulletSprite, rotation, shooterId);
-    //     return bullet;
-    // }
+    createBullet(x, y, rotation, velocity, collisionRadius) {
+        const bullet = new Bullet(x, y, rotation, velocity, collisionRadius);
+        return bullet;
+    }
 
     handleInputs() {
         if (!this.player) return;
         this.updatePlayerRotation();
         const inputs = this.gameInput.inputKeys;
+
+        if (inputs.includes(GameConfig.controls.FIRE)) {
+            this.gameWebSocket.send('playerFire', {
+                gameId: this.gameId
+            })
+            return;
+        }
+
         this.player.acceleration.setZero();
-        const accelerationFactor = this.player.mass * 1e-2;
+        const accelerationFactor = 5;
 
         if (inputs.includes(GameConfig.controls.MOVE_LEFT)) {
             this.player.acceleration.x -= accelerationFactor;
@@ -155,8 +157,8 @@ export class Game {
 
     draw(alpha) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (const player of this.players.values()) {
-            player.draw(this.ctx, alpha);
+        for (const entity of this.entities) {
+            entity.draw(this.ctx, alpha);
         }
         this.drawLatency();
     }

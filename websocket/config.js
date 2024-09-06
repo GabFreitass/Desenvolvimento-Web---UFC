@@ -18,13 +18,14 @@ const GameServerConfig = {
     playerCollisionDamage: 5,
     playerMaxHealth: 1000,
     playerMaxVelocity: 0.5,
-    playerCollisionRadius: 70,
+    playerCollisionRadius: 40,
 
     // bullet
     bulletInitialSpeed: 1.5,
     bulletMass: 80,
     bulletDuration: 2000, // ms
-    bulletDamage: 30
+    bulletDamage: 30,
+    bulletCollisionRadius: 20
 }
 
 module.exports = { ServerConfig, GameServerConfig };

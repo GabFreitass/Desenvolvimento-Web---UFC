@@ -4,14 +4,13 @@ import { GameResources } from "../core/constants.js";
 import { Sprite } from "../core/sprite.js";
 
 export class Player extends Entity {
-    constructor(name, x, y, character, rotation, velocity, mass, health, maxHealth, collisionRadius) {
+    constructor(name, x, y, character, rotation, velocity, health, maxHealth, collisionRadius) {
         const playerSprite = new Sprite(GameResources.spaceships[character], 1, 1, 180, 180);
-        super(x, y, playerSprite, rotation, velocity, mass, collisionRadius);
+        super(x, y, playerSprite, rotation, velocity, collisionRadius);
         this.name = name;
         this.character = character;
         this.health = health;
         this.maxHealth = maxHealth;
-        this.collisionRadius = collisionRadius;
     }
 
     drawName(ctx) {

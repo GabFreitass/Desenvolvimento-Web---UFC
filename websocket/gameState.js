@@ -1,5 +1,6 @@
 const { GameServerConfig } = require("./config.js");
 const { Player } = require("./player.js");
+const { Bullet } = require("./bullet.js");
 
 class GameState {
     constructor(gameId) {
@@ -11,6 +12,10 @@ class GameState {
         this.scores = new Map(); // associa cada cliente a sua pontuação
     }
 
+    get entities() {
+        return [...this.players.values(), ...this.bullets];
+    }
+
     createPlayer(clientId, playerName, playerCharacter) {
         const player = new Player(
             playerName,
@@ -19,6 +24,15 @@ class GameState {
             parseInt(playerCharacter)
         );
         this.players.set(clientId, player);
+    }
+
+    createBullet(clientId) {
+        const shooter = this.players.get(clientId);
+        if (!shooter.canFire) return;
+        shooter.stop();
+        shooter.canFire = false;
+        const bullet = new Bullet(shooter);
+        this.bullets.push(bullet);
     }
 
     removePlayer(clientId) {
@@ -43,12 +57,15 @@ class GameState {
 
     updatePlayers(deltaTime) {
         for (const [clientId, player] of this.players) {
-            player.update(deltaTime, this.players.values());
+            player.update(deltaTime, this.entities);
         }
     }
 
     updateBullets(deltaTime) {
-
+        this.bullets = this.bullets.filter(bullet => bullet.isAlive);
+        for (const bullet of this.bullets) {
+            bullet.update(deltaTime, this.entities)
+        }
     }
 
     update(deltaTime) {

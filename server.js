@@ -46,6 +46,14 @@ wss.on('connection', (ws, req) => {
                     gameState.updatePlayer(clientId, newPlayer);
                     break;
                 }
+
+                case 'playerFire': {
+                    const { gameId } = data;
+                    const gameState = gamesRooms.get(gameId);
+                    gameState.createBullet(clientId);
+                    break;
+                }
+
                 default:
                     console.log(`Mensagem não reconhecida: ${data.type}`);
             }

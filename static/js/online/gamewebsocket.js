@@ -99,8 +99,12 @@ export class GameWebSocket {
 
         this.on('gameState', (data) => {
             const state = data.state;
+            // clear previous state
             this.game.players.clear();
-            for (let clientId in state.players) {
+            this.game.bullets = [];
+
+            // update players
+            for (const clientId in state.players) {
                 const player = state.players[clientId];
                 this.game.players.set(clientId, this.game.createPlayer(
                     player.name,
@@ -109,11 +113,15 @@ export class GameWebSocket {
                     player.character,
                     player.rotation,
                     player.velocity,
-                    player.mass,
                     player.health,
                     player.maxHealth,
                     player.collisionRadius
                 ));
+            }
+
+            // update bullets
+            for (const bullet of state.bullets) {
+                this.game.bullets.push(this.game.createBullet(bullet.position.x, bullet.position.y, bullet.rotation, bullet.velocity, bullet.collisionRadius));
             }
         });
     }

@@ -1,27 +1,24 @@
-import { EntityState, EntityType, GameConfig } from "../core/constants.js";
 import { Entity } from "./localEntity.js";
+import { Sprite } from "../core/sprite.js";
+import { GameResources } from "../core/constants.js";
 
 export class Bullet extends Entity {
-    constructor(x, y, sprite, rotation, shooterId) {
-        super(x, y, sprite, GameConfig.gameParameters.bulletSpeed, GameConfig.gameParameters.bulletDamage, EntityType.BULLET, GameConfig.gameParameters.bulletMass, rotation);
-        this.durationTime = GameConfig.gameParameters.bulletDuration;
-        this.accumulatedTime = 0;
-        this.velocity.x = this.maxVelocity * Math.cos(rotation - Math.PI / 2);
-        this.velocity.y = this.maxVelocity * Math.sin(rotation - Math.PI / 2);
-        this.acceleration.x = this.velocity.x;
-        this.acceleration.y = this.velocity.y;
-        this.acceleration = this.acceleration.normalize();
-        this.acceleration = this.acceleration.scale(-GameConfig.gameParameters.frictionFactor * this.mass);
-        this.shooterId = shooterId;
-    }
-
-    update(dt, otherEntities) {
-        super.update(dt, otherEntities);
-        // Verificar tempo de vida da bala
-        this.accumulatedTime += dt;
-        if (this.accumulatedTime >= this.durationTime || this.state === EntityState.IDLE) {
-            this.isAlive = false;
-            this.accumulatedTime = 0;
-        }
+    constructor(x, y, rotation, velocity, collisionRadius) {
+        const bulletSprite = new Sprite(
+            GameResources.bullet,
+            1,
+            1,
+            20,
+            80,
+            false,
+            0,
+            1000, 
+            null, 
+            40,
+            80, 
+            110, 
+            20
+        );
+        super(x, y, bulletSprite, rotation, velocity, collisionRadius);
     }
 }
