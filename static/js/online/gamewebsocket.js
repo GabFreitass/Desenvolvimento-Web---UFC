@@ -115,7 +115,8 @@ export class GameWebSocket {
                     player.velocity,
                     player.health,
                     player.maxHealth,
-                    player.collisionRadius
+                    player.collisionRadius,
+                    player.score
                 ));
             }
 

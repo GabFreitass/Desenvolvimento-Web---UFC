@@ -9,7 +9,6 @@ class GameState {
         this.gameHeight = GameServerConfig.gameHeight;
         this.players = new Map(); // associa cada cliente a um player
         this.bullets = [];
-        this.scores = new Map(); // associa cada cliente a sua pontuação
     }
 
     get entities() {
@@ -78,14 +77,12 @@ class GameState {
 
     getState() {
         const playersObj = Object.fromEntries(this.players);
-        const scoresObj = Object.fromEntries(this.scores);
         return ({
             gameId: this.gameId,
             gameWidth: this.gameWidth,
             gameHeight: this.gameHeight,
             players: playersObj,
-            bullets: this.bullets,
-            scores: scoresObj
+            bullets: this.bullets
         });
     }
 }

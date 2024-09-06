@@ -58,8 +58,12 @@ class Entity {
                     this.isAlive = false;
                     if (entity.health) {
                         entity.takeDamage(GameServerConfig.bulletDamage);
+
+                        if (!entity.isAlive) {
+                            this.shooter.gainScore(1);
+                        }
                     }
-                // se for um player colidindo com outro
+                    // se for um player colidindo com outro
                 } else {
                     if (entity.health) {
                         this.takeDamage(GameServerConfig.playerCollisionDamage);

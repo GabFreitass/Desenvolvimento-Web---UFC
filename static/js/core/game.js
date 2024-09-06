@@ -6,8 +6,9 @@ import { GameWebSocket } from "../online/gamewebsocket.js";
 import { Bullet } from "../entities/localBullet.js";
 
 export class Game {
-    constructor(canvas, gameId, playerName, playerCharacter) {
+    constructor(canvas, score, gameId, playerName, playerCharacter) {
         this.canvas = canvas;
+        this.score = score;
         this.gameId = gameId;
         this.playerName = playerName;
         this.playerCharacter = playerCharacter;
@@ -53,8 +54,8 @@ export class Game {
         this.state = GameStates.READY;
     }
 
-    createPlayer(playerName, x, y, character, rotation, velocity, health, maxHealth, collisionRadius) {
-        const player = new Player(playerName, x, y, character, rotation, velocity, health, maxHealth, collisionRadius);
+    createPlayer(playerName, x, y, character, rotation, velocity, health, maxHealth, collisionRadius, score) {
+        const player = new Player(playerName, x, y, character, rotation, velocity, health, maxHealth, collisionRadius, score);
         return player;
     }
 
@@ -161,6 +162,7 @@ export class Game {
             entity.draw(this.ctx, alpha);
         }
         this.drawLatency();
+        this.score.textContent = `${this.player.score}`;
     }
 
     mainloop(timestamp) {

@@ -6,10 +6,11 @@ class Player extends Entity {
         super(x, y, GameServerConfig.playerMaxVelocity, GameServerConfig.playerMass, GameServerConfig.playerCollisionRadius);
         this.name = name;
         this.character = character;
-        this.fireRate = 0.5;
+        this.fireRate = 4;
         this.canFire = true;
         this.maxHealth = GameServerConfig.playerMaxHealth;
         this.health = this.maxHealth;
+        this.score = 0;
     }
 
     takeDamage(damage) {
@@ -17,6 +18,10 @@ class Player extends Entity {
         if (this.health === 0) {
             this.isAlive = false;
         }
+    }
+
+    gainScore(points) {
+        this.score += points;
     }
 
     update(deltaTime, entities) {
