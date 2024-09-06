@@ -15,7 +15,7 @@ class Bullet extends Entity {
     }
 
     update(deltaTime, entities) {
-        if (this.velocity.isZero) {
+        if (this.velocity.isZero || this.accumulatedTime > GameServerConfig.bulletDuration) {
             this.isAlive = false;
         }
         if (!this.isCollidable) {

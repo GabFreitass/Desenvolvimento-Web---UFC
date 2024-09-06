@@ -52,6 +52,20 @@ class Entity {
 
             if (this.checkCollision(newPosition, entity)) {
                 this.resolveCollision(entity);
+
+                // se for uma bala, destroi ela apos a colisao e da dano ao player acertado
+                if (this.shooter) {
+                    this.isAlive = false;
+                    if (entity.health) {
+                        entity.takeDamage(GameServerConfig.bulletDamage);
+                    }
+                // se for um player colidindo com outro
+                } else {
+                    if (entity.health) {
+                        this.takeDamage(GameServerConfig.playerCollisionDamage);
+                        entity.takeDamage(GameServerConfig.playerCollisionDamage);
+                    }
+                }
             }
         }
     }

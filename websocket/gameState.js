@@ -57,6 +57,9 @@ class GameState {
 
     updatePlayers(deltaTime) {
         for (const [clientId, player] of this.players) {
+            if (!player.isAlive) {
+                this.removePlayer(clientId);
+            }
             player.update(deltaTime, this.entities);
         }
     }
