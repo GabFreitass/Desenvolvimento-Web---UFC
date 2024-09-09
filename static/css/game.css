@@ -11,7 +11,7 @@ body {
 }
 
 canvas#game-canvas {
-    background-image: url(../assets/game-bg.jpg);
+    background-image: url(../assets/images/game-bg.jpg);
     background-size: contain; /* Escala a imagem para caber na div */
     background-position: center; /* Centraliza a imagem */
     background-repeat: repeat; /* Não repete a imagem */
@@ -31,4 +31,12 @@ h1.game-score {
     margin: 2rem 0;
     color: white;
     text-align: center;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 2rem;
 }

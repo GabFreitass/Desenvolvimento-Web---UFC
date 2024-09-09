@@ -42,7 +42,23 @@ class Entity {
         );
 
         this.handleCollisions(newPosition, entities);
+        this.clampPosition(newPosition);
         this.position = newPosition;
+    }
+
+    clampPosition(newPosition) {
+        if (newPosition.x > GameServerConfig.gameWidth) {
+            newPosition.x = 0;
+        }
+        if (newPosition.x < 0) {
+            newPosition.x = GameServerConfig.gameWidth;
+        }
+        if (newPosition.y > GameServerConfig.gameHeight) {
+            newPosition.y = 0;
+        }
+        if (newPosition.y < 0) {
+            newPosition.y = GameServerConfig.gameHeight;
+        }
     }
 
     handleCollisions(newPosition, entities) {
@@ -51,8 +67,6 @@ class Entity {
             if (!this.isCollidable || !entity.isCollidable) continue;
 
             if (this.checkCollision(newPosition, entity)) {
-                this.resolveCollision(entity);
-
                 // se for uma bala, destroi ela apos a colisao e da dano ao player acertado
                 if (this.shooter) {
                     this.isAlive = false;
@@ -63,6 +77,7 @@ class Entity {
                             this.shooter.gainScore(1);
                         }
                     }
+                    return;
                     // se for um player colidindo com outro
                 } else {
                     if (entity.health) {
@@ -70,6 +85,7 @@ class Entity {
                         entity.takeDamage(GameServerConfig.playerCollisionDamage);
                     }
                 }
+                this.resolveCollision(entity);
             }
         }
     }

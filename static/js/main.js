@@ -10,5 +10,4 @@ const playerName = urlParams.get('playerName');
 const playerCharacter = urlParams.get('playerCharacter');
 
 const game = new Game(gameCanvas, gameScore, gameId, playerName, playerCharacter);
-await game.load();
-game.start();
+game.load();

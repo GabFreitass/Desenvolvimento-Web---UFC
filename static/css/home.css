@@ -20,7 +20,7 @@ a {
   background-color: var(--dark-primary);
   max-width: 100vw;
   min-height: 100vh;
-  background-image: url(../assets/space-home.jpg);
+  background-image: url(../assets/images/space-home.jpg);
   background-size: contain; /* Escala a imagem para caber na div */
   background-position: center; /* Centraliza a imagem */
   background-repeat: no-repeat; /* Não repete a imagem */

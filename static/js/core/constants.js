@@ -22,4 +22,6 @@ export const GameConfig = {
 export const GameResources = {
     spaceships: [],
     bullet: null,
+    fireSound: null,
+    gameMusic: null,
 };

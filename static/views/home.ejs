@@ -14,7 +14,7 @@
 <body>
   <div class="background">
     <a href="/">
-      <img class="game-logo" src="/assets/space-raiders.png" alt="Space Raiders" />
+      <img class="game-logo" src="/assets/images/space-raiders.png" alt="Space Raiders" />
     </a>
     <form class="home-controls" action="/game" method="post">
       <div class="form-container">
@@ -26,7 +26,7 @@
           <label class="game-font" for="player-character">CHOOSE YOUR SPACESHIP</label>
           <div class="spaceship-carousel">
             <button type="button" class="carousel-arrow left" onclick="changeSpaceship(-1)">&#9664;</button>
-            <img id="spaceship-image" src="/assets/spaceships/spaceship0.png" alt="Espaçonave">
+            <img id="spaceship-image" src="/assets/images/spaceships/spaceship0.png" alt="Espaçonave">
             <button type="button" class="carousel-arrow right" onclick="changeSpaceship(1)">&#9654;</button>
           </div>
           <input type="hidden" id="player-character" name="player-character" value="0">
@@ -34,12 +34,12 @@
 
         <div class="start-button">
           <span>
-            <img src="/assets/play-icon.svg" alt="Start" />
+            <img src="/assets/images/play-icon.svg" alt="Start" />
             <button class="game-font btn-start" type="submit">START</button>
           </span>
         </div>
         <div class="rank-button">
-          <img src="/assets/trophy-icon.svg" alt="Ranking" />
+          <img src="/assets/images/trophy-icon.svg" alt="Ranking" />
           <a class="game-font btn-ranking" href="/ranking">RANKING</a>
         </div>
       </div>
@@ -54,7 +54,7 @@
       if (currentSpaceship > lastSpaceship) currentSpaceship = 0;
       if (currentSpaceship < 0) currentSpaceship = lastSpaceship;
 
-      document.getElementById('spaceship-image').src = `/assets/spaceships/spaceship${currentSpaceship}.png`;
+      document.getElementById('spaceship-image').src = `/assets/images/spaceships/spaceship${currentSpaceship}.png`;
       document.getElementById('player-character').value = currentSpaceship;
     }
   </script>

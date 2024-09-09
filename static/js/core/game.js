@@ -39,19 +39,29 @@ export class Game {
 
         // load resources
         for (let i = 0; i < 10; i++) {
-            GameResources.spaceships.push(new Resource(`/assets/spaceships/spaceship${i}.png`));
+            GameResources.spaceships.push(new Resource(`/assets/images/spaceships/spaceship${i}.png`));
         }
-        GameResources.bullet = new Resource("/assets/bullet.png");
+        GameResources.bullet = new Resource("/assets/images/bullet.png");
         const loadResources = [
             ...GameResources.spaceships.map(resource => resource.load()),
             GameResources.bullet.load()
         ];
         await Promise.all(loadResources);
 
+        // load sounds
+        GameResources.fireSound = new Audio('/assets/sound/laser-gun.mp3');
+        GameResources.gameMusic = new Audio('/assets/sound/game-music.mp3');
+        GameResources.gameMusic.loop = true;
+
         // load game inputs
         this.gameInput = new Input(this.canvas);
 
         this.state = GameStates.READY;
+        this.gameWebSocket.send('playerJoined', {
+            gameId: this.gameId,
+            playerName: this.playerName,
+            playerCharacter: this.playerCharacter
+        })
     }
 
     createPlayer(playerName, x, y, character, rotation, velocity, health, maxHealth, collisionRadius, score) {
@@ -64,6 +74,13 @@ export class Game {
         return bullet;
     }
 
+    playSound(sound) {
+        if (GameResources[sound]) {
+            GameResources[sound].currentTime = 0;
+            GameResources[sound].play();
+        }
+    }
+
     handleInputs() {
         if (!this.player) return;
         this.updatePlayerRotation();
@@ -72,7 +89,7 @@ export class Game {
         if (inputs.includes(GameConfig.controls.FIRE)) {
             this.gameWebSocket.send('playerFire', {
                 gameId: this.gameId
-            })
+            });
             return;
         }
 

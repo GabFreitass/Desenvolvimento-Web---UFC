@@ -4,8 +4,8 @@ const ServerConfig = {
 }
 
 const GameServerConfig = {
-    gameWidth: 1000,
-    gameHeight: 1000,
+    gameWidth: 1440,
+    gameHeight: 1024,
 
     // enviroment physics
     frictionFactor: 1e-4,
@@ -19,13 +19,14 @@ const GameServerConfig = {
     playerMaxHealth: 1000,
     playerMaxVelocity: 0.5,
     playerCollisionRadius: 40,
-
+    
     // bullet
     bulletInitialSpeed: 1.5,
     bulletMass: 80,
     bulletDuration: 2000, // ms
     bulletDamage: 30,
-    bulletCollisionRadius: 20
+    bulletCollisionRadius: 20,
+    bulletBackImpulse: 0.2,
 }
 
 module.exports = { ServerConfig, GameServerConfig };

@@ -1,5 +1,7 @@
 const { GameServerConfig } = require('./config.js');
 const { Entity } = require('./entity.js');
+const { Bullet } = require('./bullet.js');
+const { Vector2 } = require('./vector2.js');
 
 class Player extends Entity {
     constructor(name, x, y, character) {
@@ -32,6 +34,17 @@ class Player extends Entity {
         }
 
         super.update(deltaTime, entities);
+    }
+
+    fire() {
+        this.stop();
+        const bullet = new Bullet(this);
+        // Adiciona impulso para trás ao atirar
+        const direction = this.rotation - Math.PI / 2;
+        const backwardImpulse = new Vector2(Math.cos(direction), Math.sin(direction)).scale(-GameServerConfig.bulletBackImpulse);
+        this.velocity = this.velocity.add(backwardImpulse);
+        this.canFire = false;
+        return bullet;
     }
 }
 

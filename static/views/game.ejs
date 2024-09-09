@@ -12,7 +12,48 @@
 <body>
     <h1 class="game-score">SCORE: <span id="score">0</span></h1>
     </h1>
-    <canvas id="game-canvas" width="1440" height="1024"></canvas>
+    <main class="content-wrapper">
+        <canvas id="game-canvas" width="1440" height="1024"></canvas>
+        <div class="scoreboard">
+            <h2 class="game-font">Melhores Jogadores</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Posição</th>
+                        <th>Nome do Jogador</th>
+                        <th>Pontuação</th>
+                    </tr>
+                </thead>
+                <tbody id="scoreboard-body">
+                    <tr>
+                        <td>1</td>
+                        <td>Jogador 1</td>
+                        <td>100</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jogador 2</td>
+                        <td>90</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Jogador 3</td>
+                        <td>80</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Jogador 4</td>
+                        <td>70</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Jogador 5</td>
+                        <td>60</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
     <script src="/js/main.js" type="module"></script>
 </body>
 

@@ -23,11 +23,6 @@ export class GameWebSocket {
                 console.log('Conexão WebSocket estabelecida');
                 this.isConnected = true;
                 this.startPing();
-                this.send('playerJoined', {
-                    gameId: this.game.gameId,
-                    playerName: this.game.playerName,
-                    playerCharacter: this.game.playerCharacter
-                })
             };
 
             this.socket.onmessage = (event) => {
@@ -95,6 +90,7 @@ export class GameWebSocket {
 
         this.on('clientId', (data) => {
             this.clientId = data.clientId;
+            this.game.start();
         })
 
         this.on('gameState', (data) => {
@@ -125,6 +121,11 @@ export class GameWebSocket {
                 this.game.bullets.push(this.game.createBullet(bullet.position.x, bullet.position.y, bullet.rotation, bullet.velocity, bullet.collisionRadius));
             }
         });
+
+        this.on('playSound', (data) => {
+            const { sound } = data;
+            this.game.playSound(sound);
+        })
     }
 }
 
