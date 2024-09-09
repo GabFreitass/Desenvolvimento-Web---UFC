@@ -141,6 +141,9 @@ export class Game {
         this.state = GameStates.RUNNING;
         this.lastFrameTime = performance.now();
         this.rafId = requestAnimationFrame(this.mainloop);
+        window.addEventListener('keydown', () => {
+            GameResources.gameMusic.play();
+        }, { once: true });
     }
 
     pause() {

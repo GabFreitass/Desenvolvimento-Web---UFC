@@ -90,7 +90,6 @@ export class GameWebSocket {
 
         this.on('clientId', (data) => {
             this.clientId = data.clientId;
-            this.game.start();
         })
 
         this.on('gameState', (data) => {
@@ -120,6 +119,8 @@ export class GameWebSocket {
             for (const bullet of state.bullets) {
                 this.game.bullets.push(this.game.createBullet(bullet.position.x, bullet.position.y, bullet.rotation, bullet.velocity, bullet.collisionRadius));
             }
+
+            this.game.start();
         });
 
         this.on('playSound', (data) => {

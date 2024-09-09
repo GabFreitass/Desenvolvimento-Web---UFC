@@ -50,7 +50,9 @@ wss.on('connection', (ws, req) => {
                 case 'playerFire': {
                     const { gameId } = data;
                     const gameState = gamesRooms.get(gameId);
-                    gameState.createBullet(clientId);
+                    if (gameState.createBullet(clientId)) {
+                        broadcastGameSound(gameId, 'fireSound');
+                    }
                     break;
                 }
 
@@ -84,6 +86,17 @@ function broadcastGameState(gameId) {
         const clientId = `${client._socket.remoteAddress}:${client._socket.remotePort}`;
         if (client.readyState === WebSocket.OPEN && clientGameMap.get(clientId) === gameId) {
             client.send(stateMessage);
+        }
+    });
+}
+
+function broadcastGameSound(gameId, sound) {
+    const playSoundMessage = JSON.stringify({ type: 'playSound', sound });
+
+    wss.clients.forEach((client) => {
+        const clientId = `${client._socket.remoteAddress}:${client._socket.remotePort}`;
+        if (client.readyState === WebSocket.OPEN && clientGameMap.get(clientId) === gameId) {
+            client.send(playSoundMessage);
         }
     });
 }
