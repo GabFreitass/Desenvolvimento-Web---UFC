@@ -10,7 +10,17 @@ export class Input {
         document.addEventListener("visibilitychange", (event) => {
             this.inputKeys = [];
         });
-        canvas.addEventListener("pointermove", this.pointerMoveListener.bind(this));
+        const crosshair = document.getElementById('crosshair');
+        canvas.addEventListener('mouseenter', () => {
+            crosshair.style.display = 'block'; // Mostra a mira
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            crosshair.style.display = 'none'; // Esconde a mira
+        });
+        canvas.addEventListener("mousedown", (event) => this.keydownListener({ code: 'KeyF' }));
+        canvas.addEventListener("mouseup", (event) => this.keyupListener({ code: 'KeyF' }));
+        canvas.addEventListener("pointermove", (event) => this.pointerMoveListener(event, crosshair));
     }
 
     get pressingKey() {
@@ -37,12 +47,14 @@ export class Input {
         this.inputKeys.splice(keyIndex, 1);
     }
 
-    pointerMoveListener(event) {
+    pointerMoveListener(event, crosshair) {
         const rect = event.currentTarget.getBoundingClientRect();
         const scaleX = event.currentTarget.width / rect.width;
         const scaleY = event.currentTarget.height / rect.height;
-        
+
         this.cursorPosition.x = (event.clientX - rect.left) * scaleX;
         this.cursorPosition.y = (event.clientY - rect.top) * scaleY;
+        crosshair.style.left = `${event.x - 10}px`;
+        crosshair.style.top = `${event.y - 10}px`;
     }
 }

@@ -22,6 +22,7 @@ canvas#game-canvas {
     image-rendering: pixelated;
     border-radius: 5px;
     display: block;
+    cursor: none;
 }
 
 .scoreboard {
@@ -60,6 +61,16 @@ h1.game-score {
     justify-content: center;
     margin-top: 3rem;
     gap: 2vw;
+}
+
+.crosshair {
+    position: absolute;
+    width: 20px; /* Largura da mira */
+    height: 20px; /* Altura da mira */
+    background: url('../assets/images/crosshair_red.png') no-repeat center center; /* Substitua pelo caminho da sua imagem */
+    background-size: contain;
+    pointer-events: none; /* Para que a mira não interfira com eventos do canvas */
+    display: none; /* Inicialmente escondida */
 }
 
 @media screen and (max-width: 1560px) {
