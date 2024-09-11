@@ -27,6 +27,7 @@ class GameState {
 
     createBullet(clientId) {
         const shooter = this.players.get(clientId);
+        if (!shooter) return;
         if (!shooter.canFire) return false;
         const bullet = shooter.fire();
         this.bullets.push(bullet);

@@ -96,6 +96,10 @@ export class GameWebSocket {
             this.game.endGame();
         })
 
+        this.on('error', (data) => {
+            this.game.endGame();
+        })
+
         this.on('gameState', (data) => {
             const state = data.state;
             // clear previous state

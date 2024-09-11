@@ -6,6 +6,7 @@ const ServerConfig = {
 const GameServerConfig = {
     gameWidth: 1440,
     gameHeight: 1024,
+    roomMaxPlayers: 5,
 
     // enviroment physics
     frictionFactor: 1e-4,
@@ -16,7 +17,7 @@ const GameServerConfig = {
     // player
     playerMass: 500,
     playerCollisionDamage: 5,
-    playerMaxHealth: 100,
+    playerMaxHealth: 500,
     playerMaxVelocity: 0.5,
     playerCollisionRadius: 40,
     

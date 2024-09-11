@@ -1,6 +1,9 @@
 const express = require('express');
 const http = require('http');
 const uuid = require('uuid');
+const fs = require('fs');
+const path = require('path');
+const { GameServerConfig } = require('./websocket/config');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,8 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/game/:gameId", validateGameParameters, (req, res) => {
-    const playerName = req.query.playerName;
-    const playerCharacter = parseInt(req.query.playerCharacter);
+    // [TODO]: espectator
     res.render("game");
 });
 
@@ -29,8 +31,27 @@ app.post("/game", validateGameParameters, (req, res) => {
     const playerName = req.body["player-name"];
     const playerCharacter = parseInt(req.body["player-character"]);
 
-    // Geração de ID de jogo único
-    const gameId = uuid.v4();
+    // Lê o arquivo games.json
+    const gamesFilePath = path.join(__dirname, 'gamesRooms.json');
+    let gamesData = {};
+
+    if (fs.existsSync(gamesFilePath)) {
+        gamesData = JSON.parse(fs.readFileSync(gamesFilePath));
+    }
+
+    let gameId;
+    // Verifica se existe um gameId com menos de 10 jogadores
+    for (const [id, players] of Object.entries(gamesData)) {
+        if (players.length < GameServerConfig.roomMaxPlayers) {
+            gameId = id;
+            break;
+        }
+    }
+    if (!gameId) {
+        gameId = uuid.v4();
+        gamesData[gameId] = []; // Adiciona um novo gameId com uma lista vazia
+        fs.writeFileSync(gamesFilePath, JSON.stringify(gamesData, null, 2)); // Atualiza o arquivo games.json
+    }
 
     // Redirecionamento com parâmetros validados
     res.redirect(`/game/${gameId}?playerName=${encodeURIComponent(playerName.trim())}&playerCharacter=${playerCharacter}`);

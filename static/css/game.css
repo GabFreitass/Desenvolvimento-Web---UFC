@@ -70,7 +70,6 @@ h1.game-score {
     background: url('../assets/images/crosshair_red.png') no-repeat center center; /* Substitua pelo caminho da sua imagem */
     background-size: contain;
     pointer-events: none; /* Para que a mira não interfira com eventos do canvas */
-    display: none; /* Inicialmente escondida */
 }
 
 @media screen and (max-width: 1560px) {
