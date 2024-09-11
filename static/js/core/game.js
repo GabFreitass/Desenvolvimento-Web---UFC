@@ -50,7 +50,7 @@ export class Game {
 
         // load sounds
         GameResources.fireSound = new Audio('/assets/sound/laser-gun.mp3');
-        GameResources.gameMusic = new Audio('/assets/sound/game-music.mp3');
+        GameResources.gameMusic = new Audio('/assets/sound/game-music2.mp3');
         GameResources.gameMusic.loop = true;
 
         // load game inputs

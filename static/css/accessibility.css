@@ -1,0 +1,21 @@
+.accessibility-controls {
+    display: flex;
+    justify-content: flex-end;
+    background-color: #acacac;
+    padding: 5px 10px; /* Adicionado padding ao menu de acessibilidade */
+}
+
+.accessibility-controls button {
+    box-sizing: content-box;
+    border-radius: 50%;
+    border: 1px solid #6A6A6A; /* Alterada a cor da borda para um tom melhor */
+    font-size: 1rem;
+    margin: 0 5px;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    cursor: pointer;
+}

@@ -9,10 +9,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/accessibility.css" /> <!-- Adicionado link para o CSS de acessibilidade -->
 </head>
 
 <body>
   <div class="background">
+    <div class="accessibility-controls"> <!-- Adicionado contêiner para controles de acessibilidade -->
+      <button onclick="changeFontSize(1)">A+</button>
+      <button onclick="changeFontSize(-1)">A-</button>
+    </div>
     <a href="/">
       <img class="game-logo" src="/assets/images/space-raiders.png" alt="Space Raiders" />
     </a>
@@ -57,6 +62,29 @@
       document.getElementById('spaceship-image').src = `/assets/images/spaceships/spaceship${currentSpaceship}.png`;
       document.getElementById('player-character').value = currentSpaceship;
     }
+
+    function changeFontSize(direction) {
+      const html = document.documentElement;
+      const currentFontSize = parseFloat(getComputedStyle(html).fontSize); // Obtém o tamanho atual da fonte
+      let newFontSize;
+
+      if (direction === 1) {
+        newFontSize = currentFontSize + 2; // Aumenta 2px
+      } else if (direction === -1) {
+        newFontSize = currentFontSize - 2; // Diminui 2px
+      }
+
+      html.style.fontSize = `${newFontSize}px`;
+      localStorage.setItem('fontSize', newFontSize); // Salva o tamanho da fonte no localStorage
+    }
+
+    // Recupera o tamanho da fonte ao carregar a página
+    window.onload = function() {
+      const savedFontSize = localStorage.getItem('fontSize');
+      if (savedFontSize) {
+        document.documentElement.style.fontSize = savedFontSize + 'px'; // Define o tamanho da fonte salvo
+      }
+    };
   </script>
 </body>
 

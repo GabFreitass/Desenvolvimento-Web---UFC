@@ -143,9 +143,9 @@ a {
 }
 
 .form-container input {
-  border: 6px solid var(--red-primary);
-  width: min(80vw, 600px);
-  height: 80px;
+  border: 0.4rem solid var(--red-primary);
+  width: min(80vw, 30rem);
+  height: 5rem;
   font-size: 2rem;
   border-radius: 20px;
   box-shadow: 0 10px 10px 0 #000;
