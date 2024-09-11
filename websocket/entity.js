@@ -44,7 +44,9 @@ class Entity {
         this.handleCollisions(newPosition, entities);
         this.clampPosition(newPosition);
         this.position = newPosition;
-        this.rotation = -this.velocity.rotate(Math.PI).angle;
+        if (!this.velocity.isZero) {
+            this.rotation = -this.velocity.rotate(Math.PI).angle;
+        }
     }
 
     clampPosition(newPosition) {
