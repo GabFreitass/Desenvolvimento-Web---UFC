@@ -73,7 +73,7 @@ class Entity {
                     if (entity.health) {
                         entity.takeDamage(GameServerConfig.bulletDamage);
 
-                        if (!entity.isAlive) {
+                        if (!entity.isAlive && this.shooter != entity) {
                             this.shooter.gainScore(1);
                         }
                     }

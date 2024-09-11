@@ -117,6 +117,7 @@ a {
 }
 
 .home-controls {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -199,4 +200,45 @@ a {
   width: 200px;
   height: 200px;
   margin: 0 20px;
+}
+
+.buttons-container {
+  z-index: 1;
+}
+
+.audio-btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 2rem 3rem;
+  position: absolute;
+  z-index: 0;
+  bottom: -2rem;
+  left: auto;
+  width: 100vw;
+}
+
+.audio-btn-wrapper span {
+  color: white;
+  font-size: 2rem;
+}
+
+button.audio-btn {
+  cursor: pointer;
+  background: linear-gradient(45deg, rgba(239, 178, 71, 1), rgba(239, 178, 71, 0.72));
+  border: none;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 5px;
+  transition: transform 0.2s ease-in-out, background 0.2s ease-in-out; /* Adiciona transição */
+}
+
+button.audio-btn:hover {
+  transform: scale(1.1); /* Aumenta o botão ao passar o mouse */
+  background: linear-gradient(45deg, rgba(239, 178, 71, 0.8), rgba(239, 178, 71, 0.5)); /* Muda a cor de fundo ao passar o mouse */
+}
+
+.animate {
+  transition: transform 0.3s; /* Duração da animação */
+  transform: scale(1.1); /* Aumenta a imagem */
 }

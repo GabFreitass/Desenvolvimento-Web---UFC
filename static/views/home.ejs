@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
   <link rel="stylesheet" href="css/home.css" />
   <link rel="stylesheet" href="css/accessibility.css" /> <!-- Adicionado link para o CSS de acessibilidade -->
 </head>
@@ -40,7 +42,7 @@
         <div class="start-button">
           <span>
             <img src="/assets/images/play-icon.svg" alt="Start" />
-            <button class="game-font btn-start" type="submit">START</button>
+            <button class="game-font btn-start" onclick="playBtnSound()" type="submit">START</button>
           </span>
         </div>
         <div class="rank-button">
@@ -48,9 +50,17 @@
           <a class="game-font btn-ranking" href="/ranking">RANKING</a>
         </div>
       </div>
+      <div class="audio-btn-wrapper">
+        <button class="audio-btn" type="button" onclick="toggleAudio()">
+          <span class="material-symbols-outlined" id="audio-icon">volume_off</span>
+        </button>
+      </div>
     </form>
   </div>
   <script>
+    const pressBtnSound = new Audio('/assets/sound/press-effect.mp3'); // Adiciona o efeito sonoro dos botões
+    const backgroundAudio = new Audio('/assets/sound/home-music.mp3');
+
     let currentSpaceship = 0;
     const lastSpaceship = 9; // Ajuste este número para a quantidade total de espaçonaves
 
@@ -59,8 +69,22 @@
       if (currentSpaceship > lastSpaceship) currentSpaceship = 0;
       if (currentSpaceship < 0) currentSpaceship = lastSpaceship;
 
+      const spaceshipImage = document.getElementById('spaceship-image');
+      spaceshipImage.classList.add('animate'); // Adiciona a classe de animação
+
+      setTimeout(() => {
+        spaceshipImage.classList.remove('animate'); // Remove a classe após a animação
+      }, 300); // Duração da animação em milissegundos
+
       document.getElementById('spaceship-image').src = `/assets/images/spaceships/spaceship${currentSpaceship}.png`;
       document.getElementById('player-character').value = currentSpaceship;
+
+      playBtnSound();
+    }
+
+    function playBtnSound() {
+      pressBtnSound.currentTime = 0;
+      pressBtnSound.play();
     }
 
     function changeFontSize(direction) {
@@ -79,12 +103,30 @@
     }
 
     // Recupera o tamanho da fonte ao carregar a página
-    window.onload = function() {
+    window.onload = function () {
       const savedFontSize = localStorage.getItem('fontSize');
       if (savedFontSize) {
         document.documentElement.style.fontSize = savedFontSize + 'px'; // Define o tamanho da fonte salvo
       }
     };
+
+    let isMuted = true; // Adicionado para controlar o estado do áudio
+    backgroundAudio.volume = 0;
+    backgroundAudio.loop = true;
+
+    function toggleAudio() {
+      const audioIcon = document.getElementById('audio-icon');
+      isMuted = !isMuted; // Alterna o estado do áudio
+
+      if (isMuted) {
+        audioIcon.textContent = 'volume_off'; // Ícone de mudo
+        backgroundAudio.pause();
+      } else {
+        audioIcon.textContent = 'volume_up'; // Ícone de som
+        backgroundAudio.volume = 1;
+        backgroundAudio.play();
+      }
+    }
   </script>
 </body>
 

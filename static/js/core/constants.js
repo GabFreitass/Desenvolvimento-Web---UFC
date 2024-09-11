@@ -8,7 +8,7 @@ export const GameStates = {
 
 export const GameConfig = {
     MAXFPS: 60,
-    SHOW_COLLISION_CIRCLES: true,
+    SHOW_COLLISION_CIRCLES: false,
 
     controls: {// controls
         MOVE_LEFT: "KeyA",
