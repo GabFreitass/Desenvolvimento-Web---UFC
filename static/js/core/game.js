@@ -23,6 +23,7 @@ export class Game {
         this.mainloop = this.mainloop.bind(this);
         this.players = new Map();
         this.bullets = [];
+        this.waitingPause = false;
     }
 
     get entities() {
@@ -30,7 +31,11 @@ export class Game {
     }
 
     get player() {
-        return this.players.get(this.gameWebSocket.clientId);
+        const player = this.players.get(this.gameWebSocket.clientId);
+        if (!player && this.state === GameStates.RUNNING) {
+            this.gameWebSocket.send('playerDied', { gameId: this.gameId });
+        };
+        return player
     }
 
     async load() {
@@ -52,6 +57,8 @@ export class Game {
         GameResources.fireSound = new Audio('/assets/sound/laser-gun.mp3');
         GameResources.gameMusic = new Audio('/assets/sound/game-music2.mp3');
         GameResources.gameMusic.loop = true;
+        GameResources.gameOverSound = new Audio('/assets/sound/game-over.mp3');
+        GameResources.gameOverSound.loop = false;
 
         // load game inputs
         this.gameInput = new Input(this.canvas);
@@ -81,10 +88,71 @@ export class Game {
         }
     }
 
+    pauseSound(sound) {
+        if (GameResources[sound]) {
+            GameResources[sound].pause();
+        }
+    }
+
+    endGame() {
+        this.state = GameStates.ENDED;
+        this.pauseSound('gameMusic');
+        this.playSound('gameOverSound');
+    }
+
+    resumeGame() {
+        this.state = GameStates.RUNNING;
+        this.rafId = requestAnimationFrame(this.mainloop); // Retoma o loop do jogo
+        this.ctx.filter = 'none'; // Remove o efeito de blur
+    }
+
+    pauseGame() {
+        this.state = GameStates.PAUSED;
+        cancelAnimationFrame(this.rafId);
+    }
+
+    drawPause() {
+        this.ctx.save();
+        this.ctx.font = "bold 48px Orbitron";
+        this.ctx.fillStyle = "white";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillText("Game Paused", this.canvas.width / 2, this.canvas.height / 2);
+
+        this.ctx.restore();
+    }
+
+    drawEnd() {
+        this.ctx.save();
+        this.ctx.font = "bold 48px Orbitron";
+        this.ctx.fillStyle = "white";
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillText("Game Over", this.canvas.width / 2, this.canvas.height / 2);
+
+        this.ctx.restore();
+    }
+
     handleInputs() {
+        if (this.state === GameStates.ENDED) return;
+        const inputs = this.gameInput.inputKeys;
+        if (inputs.includes(GameConfig.controls.PAUSE_GAME)) {
+            if (!this.waitingPause) {
+                this.waitingPause = true;
+            }
+        } else if (this.waitingPause) {
+            this.waitingPause = false;
+            if (this.state === GameStates.PAUSED) {
+                this.resumeGame();
+            } else {
+                this.pauseGame();
+            }
+        }
+
+        if (this.state !== GameStates.RUNNING) return;
         if (!this.player) return;
         this.updatePlayerRotation();
-        const inputs = this.gameInput.inputKeys;
+
 
         if (inputs.includes(GameConfig.controls.FIRE)) {
             this.gameWebSocket.send('playerFire', {
@@ -146,13 +214,6 @@ export class Game {
         }, { once: true });
     }
 
-    pause() {
-        if (this.state == GameStates.RUNNING) {
-            cancelAnimationFrame(this.rafId);
-            this.state = GameStates.PAUSED;
-        }
-    }
-
     drawLatency() {
         this.ctx.save();
         // Configura o estilo do texto
@@ -178,25 +239,31 @@ export class Game {
 
     draw(alpha) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (const entity of this.entities) {
-            entity.draw(this.ctx, alpha);
+        if (this.state === GameStates.PAUSED) {
+            this.drawPause();
+        } else if (this.state === GameStates.ENDED) {
+            this.drawEnd();
+        } else {
+            for (const entity of this.entities) {
+                entity.draw(this.ctx, alpha);
+            }
         }
         this.drawLatency();
-        this.score.textContent = `${this.player.score}`;
+        this.score.textContent = `${this.player?.score ?? 0}`;
     }
 
     mainloop(timestamp) {
-        if (this.state !== GameStates.RUNNING) return;
-
+        // Permite que o mainloop continue mesmo se o jogo estiver pausado
         this.accumulatedTime += timestamp - this.lastFrameTime;
         this.lastFrameTime = timestamp;
+
+        const alpha = this.accumulatedTime / this.timeStep;
 
         while (this.accumulatedTime >= this.timeStep) {
             this.handleInputs();
             this.accumulatedTime -= this.timeStep;
         }
 
-        const alpha = this.accumulatedTime / this.timeStep;
         this.draw(alpha);
 
         this.rafId = requestAnimationFrame(this.mainloop);

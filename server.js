@@ -40,6 +40,13 @@ wss.on('connection', (ws, req) => {
                     ws.send(clientIdMessage);
                     break;
                 }
+
+                case 'playerDied': {
+                    const playerDiedMessage = JSON.stringify({ type: 'playerDied' })
+                    ws.send(playerDiedMessage);
+                    break;
+                }
+
                 case 'playerUpdate': {
                     const { gameId, newPlayer } = data;
                     const gameState = gamesRooms.get(gameId);

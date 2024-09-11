@@ -16,7 +16,7 @@ const GameServerConfig = {
     // player
     playerMass: 500,
     playerCollisionDamage: 5,
-    playerMaxHealth: 1000,
+    playerMaxHealth: 100,
     playerMaxVelocity: 0.5,
     playerCollisionRadius: 40,
     

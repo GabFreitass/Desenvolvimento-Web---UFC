@@ -18,8 +18,12 @@ class Player extends Entity {
     takeDamage(damage) {
         this.health = Math.max(this.health - damage, 0);
         if (this.health === 0) {
-            this.isAlive = false;
+            this.die();
         }
+    }
+
+    die() {
+        this.isAlive = false;
     }
 
     gainScore(points) {

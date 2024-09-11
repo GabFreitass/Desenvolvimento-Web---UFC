@@ -4,6 +4,7 @@ export const GameStates = {
     RUNNING: "RUNNING",
     LOADING: "LOADING",
     PAUSED: "PAUSED",
+    ENDED: "ENDED"
 };
 
 export const GameConfig = {
@@ -15,7 +16,8 @@ export const GameConfig = {
         MOVE_RIGHT: "KeyD",
         MOVE_UP: "KeyW",
         MOVE_DOWN: "KeyS",
-        FIRE: "KeyF"
+        FIRE: "KeyF",
+        PAUSE_GAME: "Escape"
     }
 };
 
@@ -24,4 +26,5 @@ export const GameResources = {
     bullet: null,
     fireSound: null,
     gameMusic: null,
+    gameOverSound: null
 };

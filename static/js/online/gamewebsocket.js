@@ -92,6 +92,10 @@ export class GameWebSocket {
             this.clientId = data.clientId;
         })
 
+        this.on('playerDied', () => {
+            this.game.endGame();
+        })
+
         this.on('gameState', (data) => {
             const state = data.state;
             // clear previous state
