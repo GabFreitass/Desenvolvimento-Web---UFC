@@ -44,6 +44,10 @@ class Vector2 {
         return new Vector2(this.x * scalar, this.y * scalar);
     }
 
+    rotate(theta) {
+        return new Vector2(this.x * Math.cos(theta) - this.y * Math.sin(theta), this.x * Math.sin(theta) + this.y * Math.cos(theta));
+    }
+
     normalize() {
         if (this.isZero) {
             throw new Error("Cannot normalize a zero vector");
