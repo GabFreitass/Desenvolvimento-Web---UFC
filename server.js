@@ -1,86 +1,91 @@
-const WebSocket = require('ws');
-const fs = require('fs');
-const path = require('path');
-const { server } = require('./httpServer.js');
-const { GameState } = require('./websocket/gameState.js');
-const { ServerConfig, GameServerConfig } = require('./websocket/config.js');
+const WebSocket = require("ws");
+const { server } = require("./httpServer.js");
+const { GameState } = require("./websocket/gameState.js");
+const { ServerConfig, GameServerConfig } = require("./websocket/config.js");
+const api = require("./api.js");
 
 const wss = new WebSocket.Server({ server });
-// Lê o arquivo games.json
-const gamesRoomsFilePath = path.join(__dirname, 'gamesRooms.json');
 const gamesStates = new Map();
 
 const clientGameMap = new Map(); // associa cada clientId com seu gameId
 
-wss.on('connection', (ws, req) => {
+api.post("/game-room/clearRooms");
+
+wss.on("connection", (ws, req) => {
     const clientIp = req.socket.remoteAddress;
     const clientPort = req.socket.remotePort;
     const clientId = `${clientIp}:${clientPort}`;
 
     console.log(`Novo cliente conectado: ${clientId}`);
 
-    ws.on('message', (message) => {
+    ws.on("message", (message) => {
         try {
             const data = JSON.parse(message);
 
             switch (data.type) {
-                case 'ping': {
-                    const pongMessage = JSON.stringify({ type: 'pong', time: data.time });
+                case "ping": {
+                    const pongMessage = JSON.stringify({
+                        type: "pong",
+                        time: data.time,
+                    });
                     ws.send(pongMessage);
                     break;
                 }
 
-                case 'playerJoined': {
+                case "playerJoined": {
                     const { gameId, playerName, playerCharacter } = data;
-                    // atualiza o arquivo json com os dados e o gamesRooms map com os dados
-                    if (fs.existsSync(gamesRoomsFilePath)) {
-                        const gamesRoomsData = JSON.parse(fs.readFileSync(gamesRoomsFilePath)); // le os dados
-                        if (!Object.keys(gamesRoomsData).includes(gameId)) {
-                            gamesRoomsData[gameId] = [];
-                        }
-                        const players = gamesRoomsData[gameId];
-                        if (!players.includes(clientId) && players.length < GameServerConfig.roomMaxPlayers) {
-                            gamesRoomsData[gameId].push(clientId);
-                            fs.writeFileSync(gamesRoomsFilePath, JSON.stringify(gamesRoomsData, null, 2)); // Atualiza o arquivo de dados
-                            // se o estado do jogo ainda não tiver sido criada, cria ele
 
-                        } else {
-                            const errorMessage = JSON.stringify({ type: 'error', message: 'Game room full or player already entered in' });
-                            ws.send(errorMessage);
-                            return; // sai da função
-                        }
+                    api.post("/game-room/joinRoom", {
+                        clientId,
+                        roomId: gameId,
+                    }).catch((error) => {
+                        console.error(error);
+                        ws.close();
+                    });
 
-                    }
                     if (!gamesStates.has(gameId)) {
                         const gameState = new GameState(gameId);
                         gamesStates.set(gameId, gameState);
                     }
                     const gameState = gamesStates.get(gameId);
-                    gameState.createPlayer(clientId, playerName, playerCharacter);
+                    gameState.createPlayer(
+                        clientId,
+                        playerName,
+                        playerCharacter
+                    );
                     clientGameMap.set(clientId, gameId);
-                    const clientIdMessage = JSON.stringify({ type: 'clientId', clientId: clientId });
+                    const clientIdMessage = JSON.stringify({
+                        type: "clientId",
+                        clientId: clientId,
+                    });
                     ws.send(clientIdMessage);
                     break;
                 }
 
-                case 'playerDied': {
-                    const playerDiedMessage = JSON.stringify({ type: 'playerDied' })
+                case "playerDied": {
+                    const playerDiedMessage = JSON.stringify({
+                        type: "playerDied",
+                    });
                     ws.send(playerDiedMessage);
                     break;
                 }
 
-                case 'playerUpdate': {
+                case "playerUpdate": {
                     const { gameId, newPlayer } = data;
                     const gameState = gamesStates.get(gameId);
-                    gameState.updatePlayer(clientId, newPlayer);
+                    if (!gameState) {
+                        ws.close();
+                    } else {
+                        gameState.updatePlayer(clientId, newPlayer);
+                    }
                     break;
                 }
 
-                case 'playerFire': {
+                case "playerFire": {
                     const { gameId } = data;
                     const gameState = gamesStates.get(gameId);
                     if (gameState.createBullet(clientId)) {
-                        broadcastGameSound(gameId, 'fireSound');
+                        broadcastGameSound(gameId, "fireSound");
                     }
                     break;
                 }
@@ -89,11 +94,11 @@ wss.on('connection', (ws, req) => {
                     console.log(`Mensagem não reconhecida: ${data.type}`);
             }
         } catch (error) {
-            console.error('Erro ao processar mensagem:', error);
+            console.error("Erro ao processar mensagem:", error);
         }
     });
 
-    ws.on('close', () => {
+    ws.on("close", () => {
         console.log(`Cliente desconectado: ${clientId}`);
         if (clientGameMap.has(clientId)) {
             const clientGameId = clientGameMap.get(clientId);
@@ -105,41 +110,46 @@ wss.on('connection', (ws, req) => {
 });
 
 function removePlayerFromRoom(gameId, clientId) {
-    // atualiza o arquivo json com os dados e o gamesRooms map com os dados
-    if (fs.existsSync(gamesRoomsFilePath)) {
-        const gamesRoomsData = JSON.parse(fs.readFileSync(gamesRoomsFilePath)); // le os dados
-        if (Object.keys(gamesRoomsData).includes(gameId)) {
-            const index = gamesRoomsData[gameId].indexOf(clientId);
-            if (index !== -1) {
-                gamesRoomsData[gameId].splice(index, 1);
-                fs.writeFileSync(gamesRoomsFilePath, JSON.stringify(gamesRoomsData, null, 2)); // Atualiza o arquivo de dados
-            }
-        }
-    }
+    api.delete(`game-room/delete?roomId=${gameId}&clientId=${clientId}`)
+        .then((response) => {
+            console.log(response.data);
+        })
+        .catch((error) => {
+            console.error(
+                `Error removing player ${clientId} from game ${gameId}:`,
+                error
+            );
+        });
 }
 
 function broadcastGameState(gameId) {
     const gameState = gamesStates.get(gameId);
     const stateMessage = JSON.stringify({
-        type: 'gameState',
+        type: "gameState",
         state: gameState.getState(),
-        timestamp: Date.now()
+        timestamp: Date.now(),
     });
 
     wss.clients.forEach((client) => {
         const clientId = `${client._socket.remoteAddress}:${client._socket.remotePort}`;
-        if (client.readyState === WebSocket.OPEN && clientGameMap.get(clientId) === gameId) {
+        if (
+            client.readyState === WebSocket.OPEN &&
+            clientGameMap.get(clientId) === gameId
+        ) {
             client.send(stateMessage);
         }
     });
 }
 
 function broadcastGameSound(gameId, sound) {
-    const playSoundMessage = JSON.stringify({ type: 'playSound', sound });
+    const playSoundMessage = JSON.stringify({ type: "playSound", sound });
 
     wss.clients.forEach((client) => {
         const clientId = `${client._socket.remoteAddress}:${client._socket.remotePort}`;
-        if (client.readyState === WebSocket.OPEN && clientGameMap.get(clientId) === gameId) {
+        if (
+            client.readyState === WebSocket.OPEN &&
+            clientGameMap.get(clientId) === gameId
+        ) {
             client.send(playSoundMessage);
         }
     });
