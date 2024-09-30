@@ -16,6 +16,15 @@ app.get("/", (req, res) => {
     res.render("home");
 });
 
+app.post("/login", (req, res) => {
+    const {login, password} = req.body;
+    api.post("/auth/login").then(response => {
+        res.redirect("/game", {"player-name": "Admin", "player-character": 3})
+    }).catch(error => {
+        alert(error.response.data);
+    })
+})
+
 app.get("/game/:gameId", validateGameParameters, (req, res) => {
     // [TODO]: espectator
     res.render("game");
