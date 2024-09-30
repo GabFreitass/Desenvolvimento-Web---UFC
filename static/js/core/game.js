@@ -35,6 +35,9 @@ export class Game {
         if (!player && this.state === GameStates.RUNNING) {
             this.gameWebSocket.send('playerDied', { gameId: this.gameId });
         };
+        if (player) {
+            this.playerScore = player.score;
+        }
         return player
     }
 
@@ -130,7 +133,7 @@ export class Game {
         this.ctx.textAlign = "center";
         this.ctx.textBaseline = "middle";
         this.ctx.fillText("Game Over", this.canvas.width / 2, this.canvas.height / 2);
-        this.ctx.fillText(`Your score:  ${this.player.score}`, this.canvas.width / 2, this.canvas.height / 2 + 80);
+        this.ctx.fillText(`Your score:  ${this.playerScore}`, this.canvas.width / 2, this.canvas.height / 2 + 80);
 
         this.ctx.restore();
     }
@@ -208,7 +211,7 @@ export class Game {
                 // Adiciona nova linha se o jogador não existir
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${existingRows.length + 1}</td>
+                    <td></td> <!-- Inicialmente vazio, será preenchido depois -->
                     <td>${score.playerName}</td>
                     <td>${score.score}</td>
                 `;
@@ -219,7 +222,10 @@ export class Game {
         // Reordena as linhas após as adições/atualizações
         Array.from(scoreboardBody.children)
             .sort((a, b) => parseInt(b.cells[2].textContent) - parseInt(a.cells[2].textContent))
-            .forEach(row => scoreboardBody.appendChild(row)); // Reanexa as linhas na ordem correta}
+            .forEach((row, index) => {
+                row.cells[0].textContent = index + 1; // Ajusta para que a contagem comece em 1
+                scoreboardBody.appendChild(row);
+            });
     }
 
     updatePlayerRotation() {
