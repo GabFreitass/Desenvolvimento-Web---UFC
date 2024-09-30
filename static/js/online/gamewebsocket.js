@@ -128,12 +128,20 @@ export class GameWebSocket {
                 this.game.bullets.push(this.game.createBullet(bullet.position.x, bullet.position.y, bullet.rotation, bullet.velocity, bullet.collisionRadius));
             }
 
+            // update scoreboard
+            const topScores = Object.values(state.players).map((player) => ({playerName: player.name, score: player.score}));
+            this.game.updateScoreboard(topScores);
+
             this.game.start();
         });
 
         this.on('playSound', (data) => {
             const { sound } = data;
             this.game.playSound(sound);
+        })
+
+        this.on('gameFinish', (data) => {
+            this.game.endGame();
         })
     }
 }

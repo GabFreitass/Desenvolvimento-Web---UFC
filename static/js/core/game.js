@@ -95,9 +95,10 @@ export class Game {
     }
 
     endGame() {
-        this.state = GameStates.ENDED;
+        this.drawEnd();
         this.pauseSound('gameMusic');
         this.playSound('gameOverSound');
+        this.state = GameStates.ENDED;
     }
 
     resumeGame() {
@@ -129,6 +130,7 @@ export class Game {
         this.ctx.textAlign = "center";
         this.ctx.textBaseline = "middle";
         this.ctx.fillText("Game Over", this.canvas.width / 2, this.canvas.height / 2);
+        this.ctx.fillText(`Your score:  ${this.player.score}`, this.canvas.width / 2, this.canvas.height / 2 + 80);
 
         this.ctx.restore();
     }
@@ -188,6 +190,36 @@ export class Game {
             });
         }
 
+    }
+
+    updateScoreboard(topScores) {
+        const scoreboardBody = document.getElementById('scoreboard-body');
+    
+        // Converte a NodeList em um array para facilitar a manipulação
+        const existingRows = Array.from(scoreboardBody.children);
+    
+        // Atualiza as linhas existentes ou adiciona novas se o jogador não estiver presente
+        topScores.forEach(score => {
+            const existingRow = existingRows.find(row => row.cells[1].textContent === score.playerName);
+            if (existingRow) {
+                // Atualiza a pontuação se o jogador já existir
+                existingRow.cells[2].textContent = score.score;
+            } else {
+                // Adiciona nova linha se o jogador não existir
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${existingRows.length + 1}</td>
+                    <td>${score.playerName}</td>
+                    <td>${score.score}</td>
+                `;
+                scoreboardBody.appendChild(row);
+            }
+        });
+    
+        // Reordena as linhas após as adições/atualizações
+        Array.from(scoreboardBody.children)
+            .sort((a, b) => parseInt(b.cells[2].textContent) - parseInt(a.cells[2].textContent))
+            .forEach(row => scoreboardBody.appendChild(row)); // Reanexa as linhas na ordem correta}
     }
 
     updatePlayerRotation() {
