@@ -48,6 +48,9 @@ wss.on("connection", (ws, req) => {
                     if (!gamesStates.has(gameId)) {
                         const gameState = new GameState(gameId);
                         gamesStates.set(gameId, gameState);
+                        setTimeout(() => {
+                            broadcastGameEnd(clientId, gameId)
+                        }, 120000);
                     }
                     const gameState = gamesStates.get(gameId);
                     gameState.createPlayer(
@@ -122,6 +125,32 @@ function removePlayerFromRoom(gameId, clientId) {
                 error
             );
         });
+}
+
+function broadcastGameEnd(clientId, gameId) {
+    const gameState = gamesStates.get(gameId);
+    const stateMessage = JSON.stringify({
+        type: "gameFinish",
+        state: gameState.getState(),
+        timestamp: Date.now(),
+    });
+
+    wss.clients.forEach((client) => {
+        const clientId = `${client._socket.remoteAddress}:${client._socket.remotePort}`;
+        if (
+            client.readyState === WebSocket.OPEN &&
+            clientGameMap.get(clientId) === gameId
+        ) {
+            client.send(stateMessage);
+        }
+        api.post('/ranking/add', {
+            clientId,
+            playerName: gameState.players.get(clientId).name,
+            obtainedAt: new Date(),
+            score: gameState.players.get(clientId).score
+        })
+        removePlayerFromRoom(gameId, clientId);
+    });
 }
 
 function broadcastGameState(gameId) {
