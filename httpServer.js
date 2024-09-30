@@ -22,7 +22,18 @@ app.get("/game/:gameId", validateGameParameters, (req, res) => {
 });
 
 app.get("/ranking", (req, res) => {
-    res.render("ranking");
+    // Obtendo os dados do ranking pela API
+    api.get("/ranking/topScores")
+        .then((response) => {
+            const topScores = response.data; // Lista de jogadores
+            res.render("ranking", { topScores }); // Passando os dados para a view
+        })
+        .catch((error) => {
+            console.error("Erro ao obter os dados do ranking:", error);
+            res.status(500).send(
+                "Erro ao carregar o ranking. Tente novamente mais tarde."
+            );
+        });
 });
 
 app.post("/game", validateGameParameters, (req, res) => {

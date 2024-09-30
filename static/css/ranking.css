@@ -1,7 +1,6 @@
 body {
     margin: 0;
     overflow-x: hidden;
-
 }
 
 * {
@@ -60,7 +59,6 @@ a {
 }
 
 @keyframes pulse {
-
     0%,
     100% {
         transform: scale(1);
@@ -79,8 +77,53 @@ a {
 .ranking-container {
     width: min(600px, 80%);
     height: 500px;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.4);
     margin-bottom: 2rem;
     border-radius: 15px;
-    opacity: 0.4;
+}
+
+.ranking-container {
+    font-size: 16px;
+    font-family: "Orbitron", sans-serif;
+    color: white;
+    border: 5px solid white;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0 1rem;
+    overflow-y: auto;
+}
+
+.ranking-container tr {
+    height: 3em;
+}
+
+.ranking-container th {
+    padding: 1em;
+}
+
+.ranking-container th,
+.ranking-container td,
+.ranking-container h2 {
+    text-align: center;
+}
+
+.ranking-container::-webkit-scrollbar {
+    width: 12px; /* Largura da barra de rolagem */
+}
+
+.ranking-container::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Cor do fundo da barra de rolagem */
+}
+
+.ranking-container::-webkit-scrollbar-thumb {
+    background: #888; /* Cor do "thumb" da barra de rolagem */
+    border-radius: 0; /* Bordas retas */
+}
+
+.ranking-container::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Cor do "thumb" ao passar o mouse */
+}
+
+.table-ranking {
+    width: 100%;
 }

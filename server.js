@@ -1,7 +1,7 @@
 const WebSocket = require("ws");
 const { server } = require("./httpServer.js");
 const { GameState } = require("./websocket/gameState.js");
-const { ServerConfig, GameServerConfig } = require("./websocket/config.js");
+const { ServerConfig } = require("./websocket/config.js");
 const api = require("./api.js");
 
 const wss = new WebSocket.Server({ server });
@@ -9,7 +9,9 @@ const gamesStates = new Map();
 
 const clientGameMap = new Map(); // associa cada clientId com seu gameId
 
-api.post("/game-room/clearRooms");
+api.post("/game-room/clearRooms").catch((error) => {
+    console.error("Can't clear rooms data");
+});
 
 wss.on("connection", (ws, req) => {
     const clientIp = req.socket.remoteAddress;
