@@ -18,10 +18,10 @@ app.get("/", (req, res) => {
 
 app.post("/login", (req, res) => {
     const {login, password} = req.body;
-    api.post("/auth/login").then(response => {
+    api.post("/auth/login", {login, password}).then(response => {
         res.redirect("/game", {"player-name": "Admin", "player-character": 3})
     }).catch(error => {
-        alert(error.response.data);
+        res.status(403).send(error.response.data);
     })
 })
 
